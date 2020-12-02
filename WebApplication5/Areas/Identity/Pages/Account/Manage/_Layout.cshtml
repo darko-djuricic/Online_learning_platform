@@ -1,0 +1,32 @@
+﻿@{
+    if (ViewData.TryGetValue("ParentLayout", out var parentLayout))
+    {
+        Layout = (string)parentLayout;
+    }
+    else
+    {
+        Layout = "/Areas/Identity/Pages/_Layout.cshtml";
+    }
+}
+@section Styles{ 
+    <link href="~/css/userImage.css" rel="stylesheet" />
+}
+
+    <div class="w-100 position-static bg-light pt-1 text-primary shadow-sm  pb-2">
+        <a class="h3 ml-3">Manage your account</a>
+        <a asp-controller="Home" class="float-right text-decoration-none text-primary mr-3 mr-md-5 mt-4">Home Page</a>
+        <h5 class="ml-3">Change your account settings</h5>
+    </div>
+
+    <div class="container shadow pl-5 pr-5 pb-5 pt-2 mt-3">
+        <partial name="_ManageNav" />
+        <div class="mt-5 pt-3">
+            @RenderBody()
+        </div>
+    </div>
+
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+    <script>$("#footer").remove()</script>
+}

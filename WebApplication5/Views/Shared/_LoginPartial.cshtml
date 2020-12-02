@@ -1,0 +1,106 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+    <ul class="navbar-nav mt-0">
+        @if (SignInManager.IsSignedIn(User))
+        {
+
+            string imageDataUrl = null;
+            using (var _context = new WebApplication5.Data.ViserCoursesContext())
+            {
+                var image = _context.Users.Include(el => el.Image).SingleOrDefaultAsync(el => el.Username.Equals(User.Identity.Name)).Result.Image;
+
+                if (image != null && image.ImageData != null)
+                {
+                    string imageBase64Data = Convert.ToBase64String(image.ImageData);
+                    imageDataUrl = $"data:{image.ImageType};base64,{imageBase64Data}";
+                }
+
+            }
+
+            
+            @if (User.IsInRole("Admin"))
+            {
+                <li class="nav-item pt-3">
+                        <a asp-controller="Admin" asp-action="Index" class="nav-link mr-3 text-success h5">Admin</a>
+                    </li>
+            }
+            else
+            {
+                if (User.IsInRole("Teacher"))
+                {
+                    <li class="nav-item pt-0 pt-md-3">
+                    <a asp-controller="Teacher" asp-action="Index" class="nav-link mr-3 text-success h5">Instructor</a>
+                </li>
+                }
+                else
+                {
+                    <li class="nav-item pt-3">
+                        <a asp-controller="Course" asp-action="MyCourses" class="nav-link mr-3 text-success h5">My courses</a>
+                    </li>
+                }
+            }
+            <li class="dropdown">
+                <a class="nav-link d-flex justify-content-center pt-3" role="button" id="navDrop" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Profile Stuff">
+                    <div class="rounded-circle bg-light mr-2 ml-2" style="width: 45px; height: 45px; background:url(@imageDataUrl) no-repeat center center; background-size: cover;">
+                        <div class="d-flex justify-content-center pt-2 align-items-center">
+                            @if (imageDataUrl == null)
+                            {
+                                <img src="~/img/user.svg" width="25" alt="User image" />
+                            }
+                        </div>
+                    </div>
+                    <span class="dropdown-toggle position-absolute h5 ml-5 pl-4 mt-2"></span>
+                </a>
+                <div class="dropdown-menu pr-2 pl-2 dropdown-menu-right" aria-labelledby="navDrop">
+                    <a class="text-decoration-none pl-0" asp-area="Identity" asp-page="/Account/Manage/Index">
+                        <div class="media">
+                            <div class="rounded-circle bg-light mr-2 ml-2" style="width: 70px; height: 70px; background:url(@imageDataUrl) no-repeat center center; background-size: cover;">
+                                <div class="d-flex justify-content-center pt-2 align-items-center">
+                                    @if (imageDataUrl == null)
+                                    {
+                                        <img src="~/img/user.svg" width="50" alt="User image" />
+                                    }
+                                </div>
+                            </div>
+                            <div class="media-body pt-2">
+                                <p class="mt-0 font-weight-bold h6">@User.Identity.Name</p>
+                                <p class="mr-2 small text-secondary text-decoration-none">@UserManager.FindByNameAsync(User.Identity.Name).Result.Email</p>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <h6 class="dropdown-header">Dashboards</h6>
+                    <a class="dropdown-item" asp-controller="Course" asp-action="MyCourses">My courses</a>
+                    @if (User.IsInRole("Teacher"))
+                    {
+                        <a class="dropdown-item" asp-controller="Teacher" asp-action="Index">Instructor dashboard</a>
+                    }
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a class="dropdown-item" asp-controller="Admin" asp-action="Index">Admin dashboard</a>
+                    }
+                    <div class="dropdown-divider"></div>
+                    <h6 class="dropdown-header">Account settings</h6>
+                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Upgrade">Upgrade account</a>
+                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Email">Settings</a>
+                    <div class="dropdown-divider"></div>
+                    <div class="pt-0">
+                        <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                            <button type="submit" class="btn ml-1 mr-1 btn-outline-success btn-block">Logout</button>
+                        </form>
+                    </div>
+
+                </div>
+            </li>
+        }
+        else
+        {
+            <li class="nav-item">
+                <a class="btn btn-success mr-2 pr-5 pl-5 rounded-pill" type="button" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                <a class="btn btn-outline-success pr-5 pl-5 rounded-pill" asp-area="Identity" asp-page="/Account/Login">Login</a>
+            </li>
+        }
+    </ul>

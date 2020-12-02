@@ -1,0 +1,74 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+@section Styles{ 
+    <link href="~/css/registration.css" rel="stylesheet" />
+}
+
+<section class="bg-primary p-5 text-light row justify-content-center align-items-center">
+    <div class="container">
+        <div class="jumbotron round p-0 p-lg-3 pr-lg-4">
+            <div class="row">
+                <div class="col-7 d-none d-lg-block">
+                    <div class="jumbotron text-primary round pt-3 pb-2 m-0">
+                        <img src="~/img/teaching.svg" class="img-fluid" alt="teacher image" />
+                        <h4 class="text-center mt-3">You can become a teacher too! </h4>
+                        <p class="mb-0">After registration, you can easily upgrade your account and become a teacher. More informations in further instructions</p>
+                    </div>
+                </div>
+                <div id="formRegistration" class="bg-primary col-12 text-light round col-lg-5 shadow-lg">
+                    <h1 class="text-center display-4 pt-3">Registration</h1>
+                    <div class="row">
+                        <div class="col-12  d-flex justify-content-center align-items-center">
+                            <img src="~/img/profile2.svg" height="100" width="100" class="img-fluid " alt="registration" />
+                        </div>
+                        <div class="col-12">
+                            <form id="form1" class="needs-validation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                                <div asp-validation-summary="All" class="text-danger"></div>
+                                <div class="form-group">
+                                    <label for="emailRegister"><b class="text-danger">* </b>Email</label>
+                                    <input asp-for="Input.Email" class="form-control round" id="emailRegister" type="email" data-container="body" data-toggle="popover" data-placement="top" data-trigger="focus" title="Email" data-content="Email must be unique and to fullfils email validation" required />
+                                    <div class="valid-feedback">Looks good!</div>
+                                    <div class="invalid-feedback" id="emailInvalid"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="username"><b class="text-danger">* </b>Username</label>
+                                    <input asp-for="Input.UserName" class="form-control round" id="usernameRegister" data-container="body" data-toggle="popover" data-placement="top" data-trigger="focus" title="Username" data-content="Username must be unique" type="text" required />
+                                    <div class="valid-feedback">Looks good!</div>
+                                    <div class="invalid-feedback" id="userInvalid"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password2"></label><b class="text-danger">* </b>Password
+                                    <input asp-for="Input.Password" class="form-control round" id="password2" data-container="body" data-toggle="popover" data-placement="top" data-trigger="focus" title="Password" data-content="Password must be at least 8 characters long and should have at least one special character, one number and one uppercase alphabet letter" type="password" required />
+                                    <div class="valid-feedback">Looks good!</div>
+                                    <div class="h4 invalid-feedback">Weak</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="repassword2"></label><b class="text-danger">* </b>Confirm
+                                    <input asp-for="Input.ConfirmPassword" class="form-control round" id="repassword2" type="password" required />
+                                </div>
+                                <button class="btn btn-warning round btn-lg btn-block" id="btnRegister">Register</button>
+                            </form>
+                            <p id="emptyHelp" class="text-danger h5 mt-3 mb-2 text-center"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <div class="wave wave1"></div>
+    <div class="wave wave2"></div>
+    <div class="wave wave3"></div>
+    <div class="wave wave4"></div>
+</section>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/register.js"></script>
+}

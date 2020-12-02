@@ -1,0 +1,91 @@
+﻿@using WebApplication5.Data;
+
+@{
+    var QAs = new List<Comment>();
+    var content = new Content();
+    using (var context = new ViserCoursesContext())
+    {
+        QAs = context.Comments.Where(el=>el.IsQA==true).ToList();
+        content = context.Contents.First();
+    }
+}
+
+@if (QAs != null)
+{
+    <ul id="qaSection" class="list-unstyled">
+        @foreach (var qa in QAs)
+        {
+            DateTime qaDate = qa.Date;
+            var condition = qa.Replies != null && qa.Replies.Count > 0;
+
+            <li class="@(content.QA.Any(el=>el.Id==qa.Id)?"thisLecture":"")">
+                <div class="media question mb-5 border-bottom text-justify">
+                    <div class="userImg text-light mr-3 mt-1 pt-2 d-flex justify-content-center align-items-center rounded-circle" style="width: 60px; height: 60px;">
+                        <span class="h3">@qa.Author[0]</span>
+                    </div>
+                    <div class="media-body">
+                        <span class="commentTitle mt-0 h5 font-weight-bold mt-5">
+                            @qa.Title
+                        </span>
+                        <span class="qaBody d-none d-md-block">@qa.Body</span>
+                        <div class="row">
+                            <div class="small mt-3 pl-3 mr-auto">
+                                <a href="#" class="commentAuthor d-inline">@qa.Author</a>
+                                <p class="qaDate d-inline ml-2">@(qaDate.ToShortDateString() == DateTime.Today.ToShortDateString() ? "Today":qaDate.ToShortDateString())</p>
+                            </div>
+                            <p class="s lead mr-2 mt-2 pl-3">
+                                <a class="mr-3 mt-2 text-decoration-none h6" data-toggle="modal" data-comment="@qa.Title" data-id="@qa.Id" href="#replyModal">Reply</a>
+                                @if (condition)
+                                {
+                                    <a class="mr-3 mt-2 text-decoration-none dropdown-toggle h6" data-toggle="collapse" href="#collapseReplies" role="button" aria-expanded="false" aria-controls="collapseReplies">Show replies</a>
+                                }
+                                <div class="col-12 col-md-2 col-lg-1 ml-0 p-0 pt-2 pr-2 text-right mb-2">
+                                    <img id="@qa.Id" class="likeButton" src="~/img/like.svg" width="25" alt="like" />
+                                    <span class="likes text-success mt-5 ml-1">1224</span>
+                                </div>
+                            </p>
+                        </div>
+
+                        @if (condition)
+                        {
+                            <div class="replies border collapse container-fluid mt-3 mb-2" id="collapseReplies">
+                                @foreach (var reply in qa.Replies)
+                                {
+                                    var replDate = reply.Date;
+                                    <div class="media ml-0 reply w-100 border-bottom text-justify">
+                                        <div class="userImg text-light p-2 pl-3 pr-3 mr-3 mt-2 rounded-circle">
+                                            <span class="h3">@reply.Author[0]</span>
+                                        </div>
+                                        <div class="media-body pt-2">
+                                            <span class="commentTitle mt-0 pt-2 h5 font-weight-bold mt-5">
+                                                @reply.Title
+                                            </span>
+                                            <span class="replyBody d-none d-md-block">@reply.Body</span>
+                                            <div class="row">
+                                                <div class="small mt-3 ml-3">
+                                                    <a href="#" class="commentAuthor d-inline">@reply.Author</a>
+                                                    <p class="qaDate d-inline ml-2">@(replDate.ToShortDateString() == DateTime.Today.ToShortDateString() ? "Today": replDate.ToShortDateString())</p>
+                                                </div>
+                                                <p class="lead ml-auto mr-2 mt-2">
+                                                    <img id="@reply.Id" class="likeButton" src="~/img/like.svg" width="25" alt="like" />
+                                                    <span class="likes text-success mt-4 ml-2">2432</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                        }
+
+                    </div>
+                </div>
+            </li>
+
+        }
+    </ul>
+}
+else
+{
+    <h3>There are no questions for this lecture</h3>
+}

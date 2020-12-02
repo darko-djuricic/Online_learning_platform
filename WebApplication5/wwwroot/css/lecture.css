@@ -1,0 +1,31 @@
+﻿#contents {
+    top: 0;
+}
+
+.likeButton {
+    cursor: pointer;
+}
+
+#lectureText{
+    resize: none;
+    line-height: 20px;
+}
+@media screen and (max-width: 768px) {
+    #contents {
+        position: relative !important;
+    }
+}
+
+.geekmark {
+    height: 25px;
+    width: 25px;
+    background-color: black;
+}
+
+.reply{
+    border-width: 20px !important;
+}
+
+.video{
+    height: 70vh;
+}

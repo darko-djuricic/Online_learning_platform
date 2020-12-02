@@ -1,0 +1,104 @@
+﻿@{
+    Layout = "_LayoutTeacher";
+    ViewBag.Title = "Teacher Panel";
+}
+
+
+@model List<WebApplication5.Models.Course>
+
+    <div class="">
+        <div id="shadowDiv" class="container-fluid shadow pt-4 pb-4 mt-5">
+            <div class="row">
+                <div class="col-md-9">
+                    <h3 class="ml-md-2 text-center text-md-left mt-3">Course creation</h3>
+                </div>
+                <div class="col-md-3 pl-5 pr-5 pl-md-0 pr-md-0">
+                    <button class="btn btn-danger float-right mt-3 mr-md-3 btn-lg btn-block" data-toggle="modal" data-target="#courseModal">New</button>
+                </div>
+            </div>
+        </div>
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-warning alert-dismissible mt-3 fade show" role="alert">
+                @ViewBag.Message
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span class="text-white" aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+    </div>
+
+    <div class="container-fluid mt-5 pt-5">
+        <div class="row">
+            <div class="col-md-auto">
+                <h2 class="text-center text-md-left">My Courses</h2>
+            </div>
+            <div class="col-md-auto ml-0 ml-xl-auto">
+                <div class="row mt-2 pr-4">
+                    <div class="col-md-5 col-lg-auto">
+                        <div class="input-group">
+                            <input type="text" class="form-control searchCourses" placeholder="Search all courses">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-success disabled">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7 col-lg-auto pt-1">
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" id="courseRadios" name="courseRadios" checked value="0" class="custom-control-input">
+                            <label class="custom-control-label" for="courseRadios">All</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" id="customRadioInline2" name="courseRadios" value="1" class="custom-control-input">
+                            <label class="custom-control-label" for="customRadioInline2">Published</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" id="customRadioInline3" name="courseRadios" value="-1" class="custom-control-input">
+                            <label class="custom-control-label" for="customRadioInline3">Unpublished</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="container-fluid">
+            <div class="row d-flex justify-content-center">
+            @foreach (var course in Model)
+            {
+                string imageDataUrl = "/img/undraw_online_test_gba7.png";
+                if (course.Image != null)
+                {
+                    string imageBase64Data = Convert.ToBase64String(course.Image.ImageData);
+                    imageDataUrl = $"data:{course.Image.ImageType};base64,{imageBase64Data}";
+                }
+
+                <div class="col-auto mb-3 course @(course.Published?"published":"")">
+                    <div class="card">
+                        @if (course.Published)
+                        {
+                            <div class="position-absolute h5">
+                                <span class="badge badge-warning">Published</span>
+                            </div>
+                        }
+                        <img src="@imageDataUrl" height="200" class="card-img-top" alt="...">
+                        <div id="courseBody" class="card-body mb-0">
+                            <h6 class="card-title courseTitle h6">@course.Title</h6>
+                            <p class="card-text courseDesc small">@course.TitleDescription</p>
+                        </div>
+                        <a href="@Url.Action("Content", "Teacher", new { id = course.CourseId })" class="btn btn-success ml-3 mr-3 mb-2">Edit</a>
+                    </div>
+                </div>
+            }
+            </div>
+        </div>
+    </div>
+<partial name="_ModalTeacherPage" />
+
+@{ 
+    WebApplication5.Controllers.TeacherController.StatusMessageCreate = null;
+}
+
+@section Scripts{
+    <script async src="~/js/addCourse.js"></script>
+    <script async src="~/js/teacher.js"></script>
+}

@@ -1,0 +1,8 @@
+﻿.checkCourse:checked + .pickCourse {
+    background-color: rgba(0,0,0,0.6);
+    color: white;
+}
+
+.pickCourse{
+    cursor: pointer;
+}

@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>aspnet-WebApplication5-C4A10EE5-4353-4830-8594-70F812D39807</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Data\Migrations\20200908221955_AddingLikedPropForUser.cs" />
+    <Compile Remove="Data\Migrations\20200908221955_AddingLikedPropForUser.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200908222240_AddingLikedPropForUser.cs" />
+    <Compile Remove="Data\Migrations\20200908222240_AddingLikedPropForUser.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200921182510_LikeRealization.cs" />
+    <Compile Remove="Data\Migrations\20200921182510_LikeRealization.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200921183554_LikeRealization.cs" />
+    <Compile Remove="Data\Migrations\20200921183554_LikeRealization.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200921184245_LikeRealization.cs" />
+    <Compile Remove="Data\Migrations\20200921184245_LikeRealization.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200921190639_LikeRealization.cs" />
+    <Compile Remove="Data\Migrations\20200921190639_LikeRealization.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200921192825_RepliesColumnName.cs" />
+    <Compile Remove="Data\Migrations\20200921192825_RepliesColumnName.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200921201156_AddingRepliesPt2.cs" />
+    <Compile Remove="Data\Migrations\20200921201156_AddingRepliesPt2.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200921210353_LikeRealization.cs" />
+    <Compile Remove="Data\Migrations\20200921210353_LikeRealization.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200921211049_LikeRealizaasdtion.cs" />
+    <Compile Remove="Data\Migrations\20200921211049_LikeRealizaasdtion.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200926113113_ChaningTypeOFAuthorOfCourseToUserType.cs" />
+    <Compile Remove="Data\Migrations\20200926113113_ChaningTypeOFAuthorOfCourseToUserType.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201003115606_ASD.cs" />
+    <Compile Remove="Data\Migrations\20201003115606_ASD.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201013214827_FromListOfProgressesToProgressInCourseUserAndRemoveItFromContent.cs" />
+    <Compile Remove="Data\Migrations\20201013214827_FromListOfProgressesToProgressInCourseUserAndRemoveItFromContent.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+   
+    <PackageReference Include="Microsoft.AspNet.Identity.Core" Version="2.2.3" />
+   
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.4" />
+    <PackageReference Include="SendGrid" Version="9.21.0" />
+  </ItemGroup>
+
+</Project>

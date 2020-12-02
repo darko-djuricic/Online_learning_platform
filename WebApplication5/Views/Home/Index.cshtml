@@ -1,0 +1,98 @@
+﻿@model List<Categories>
+@{
+    ViewData["Title"] = "Home Page";
+}
+@section Styles{
+    <link href="~/css/searchbar.css" rel="stylesheet" />
+}
+
+
+<div id="getStartedJumbo" class=" pb-5 bg-success text-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-5 text-left">
+                <h1 class="headerJumbo display-4">Welcome to VISER platform!</h1>
+                <p class="lead">Over 1000+ free courses</p>
+                <a class="btn btn-primary round btn-lg mt-2" asp-controller="Course" asp-action="Explore">Get started</a>
+                <form id="searchForm" class="mt-5 mb-4" method="get" asp-controller="Course" asp-action="Index" role="search">
+                    <input id="search" type="search" name="search" placeholder="What do you want to learn?" autofocus />
+                    <button id="searchButton" class="btn btn-primary" type="submit">Go</button>
+                </form>
+            </div>
+            <div class="col-lg-7">
+                <img src="~/img/knowledge.svg" class="img-fluid" alt="knowledge">
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="container mt-3 mb-5 pb-5">
+    <div class="row mb-5">
+        <div class="col-sm-6 col-md-4 d-flex justify-content-center mt-3">
+            <div class="card rounded zoom shadow text-justify">
+                <div class="col-12">
+                    <div class="d-flex justify-content-center mb-3 mt-2">
+                        <img src="~/img/design.png" class="img-fluid" alt="design">
+                    </div>
+                    <p class="lead">You will learn from experienced instructors, and all your enrolled courses will be available to you forever. </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-4 d-flex justify-content-center mt-3">
+            <div class="card rounded zoom shadow text-justify">
+                <div class="col-12">
+                    <div class="d-flex justify-content-center mb-3 mt-2">
+                        <img src="~/img/code.png" class="img-fluid" alt="code">
+                    </div>
+                    <p class="lead">
+                        A modern way of learning that is easy for everyone!
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4 d-flex justify-content-center mt-3 ">
+            <div class="card rounded zoom shadow">
+                <div class="col-12">
+                    <div class="d-flex justify-content-center mb-3 mt-2">
+                        <img src="~/img/launch.png" class="img-fluid" alt="launch">
+                    </div>
+                    <p class="lead">Launch your career as teacher where you can create your own courses. </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 mb-5">
+            <h3 class="mt-5 pt-5">The most popular topics by cateogory</h3>
+        </div>
+        @foreach (var cat in Model)
+        {
+            <div class="col-auto">
+                <a asp-controller="Course" asp-action="Explore" asp-route-id="@cat.Id" class="col-12 d-flex justify-content-center align-items-center h5 text-decoration-none text-info text-center p-3 ml-1 shadow">
+                    <b>@cat.Title</b>
+                </a>
+            </div>
+        }
+        
+
+    </div>
+</div>
+<div class="jumbotron jumbotron-fluid bg-primary text-light text-center">
+    <div class="container">
+        <h2>Start learning today!</h2>
+        <p class="lead">Register and enroll as many courses as you want.</p>
+        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-outline-light rounded pl-4 pr-4">Register</a>
+    </div>
+</div>
+<div class="container mt-3">
+    <div class="row mt-5 pt-5 align-items-center">
+        <div class="col-9 col-md-4 col-lg-6">
+            <h3 class="font-weight-bold">Join us!</h3>
+            <p class="lead">You can become teacher of our online learning platform</p>
+        </div>
+        <div class="col-3 col-md-8 col-lg-6 p-0 p-md-3">
+            <img src="~/img/teacher.svg" class="img-fluid" alt="Alternate Text" />
+        </div>
+    </div>
+</div>

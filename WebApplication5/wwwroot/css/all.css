@@ -1,0 +1,414 @@
+.navbar {
+    /* background-color: transparent; */
+    color: white;
+    transition: 0.4s;
+}
+
+.selected {
+    background-color: rgba(0, 200, 255, 0.20) !important;
+}
+
+#footer {
+    bottom: 0;
+    width: 100%;
+}
+
+.courseDesc {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.text-overflow {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 250px !important;
+}
+
+.zoom:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.popover{
+    position: relative;
+    z-index: 99999999;
+}
+/****APPEARING TEXT*****/
+.appearing-text {
+    animation: fadein 3s;
+}
+
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+/***********************/
+#getStartedJumbo{
+  padding-top: 160px;
+}
+
+.navbar .nav-item .dropdown-menu {
+  position: absolute;
+}
+
+
+.bg-black{
+    background-color: black;
+    
+}
+
+.right-0{
+    right:0;
+}
+.reply{
+    border-width: 20px !important;
+}
+
+
+.dropdown-menu .dropdown-toggle:after {
+    border-top: .3em solid transparent;
+    border-right: 0;
+    border-bottom: .3em solid transparent;
+    border-left: .3em solid;
+}
+
+.dropdown-menu .dropdown-menu {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.dropdown-menu li {
+    position: relative;
+}
+
+.nav-item .submenu {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: -7px;
+}
+
+.nav-item .submenu-left {
+    right: 100%;
+    left: auto;
+}
+
+.dropdown-menu > li:hover {
+    background-color: #f1f1f1
+}
+
+.dropdown-menu > li:hover > .submenu {
+    display: block;
+}
+
+
+
+/* width */
+::-webkit-scrollbar {
+    width: 15px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgb(17, 13, 29);
+  border-radius: 10px;
+}
+
+.scrollable{
+  overflow: scroll;
+  overflow-x: hidden;
+}
+
+.card {
+  width: 300px;
+}
+
+/*COMMENTS AND QAs*/
+
+#commentsOrQa{
+    height: 600px !important;
+}
+
+.cursor-pointer{
+    cursor: pointer !important;
+}
+
+.alert{
+    width: auto;
+}
+
+.card-header{
+    z-index: 9999999999 !important;
+}
+svg {
+    cursor: pointer;
+    overflow: visible;
+    width: 50px;
+}
+
+svg #heart {
+    transform-origin: center;
+    animation: animateHeartOut 0.3s linear forwards;
+}
+
+svg #main-circ {
+    transform-origin: 29.5px 29.5px;
+}
+
+.likeButton {
+    display: none;
+}
+
+.likeButton:checked + label svg #heart {
+    transform: scale(0.2);
+    fill: #e2264d;
+    animation: animateHeart 0.3s linear forwards 0.25s;
+}
+
+.likeButton:checked + label svg #main-circ {
+    transition: all 2s;
+    animation: animateCircle 0.3s linear forwards;
+    opacity: 1;
+}
+
+.likeButton:checked + label svg #grp1 {
+    opacity: 1;
+    transition: 0.1s all 0.3s;
+}
+
+.likeButton:checked + label svg #grp1 #oval1 {
+    transform: scale(0) translate(0, -30px);
+    transform-origin: 0 0 0;
+    transition: 0.5s transform 0.3s;
+}
+
+.likeButton:checked + label svg #grp1 #oval2 {
+    transform: scale(0) translate(10px, -50px);
+    transform-origin: 0 0 0;
+    transition: 1.5s transform 0.3s;
+}
+
+.likeButton:checked + label svg #grp2 {
+    opacity: 1;
+    transition: 0.1s all 0.3s;
+}
+
+.likeButton:checked + label svg #grp2 #oval1 {
+    transform: scale(0) translate(30px, -15px);
+    transform-origin: 0 0 0;
+    transition: 0.5s transform 0.3s;
+}
+
+.likeButton:checked + label svg #grp2 #oval2 {
+    transform: scale(0) translate(60px, -15px);
+    transform-origin: 0 0 0;
+    transition: 1.5s transform 0.3s;
+}
+
+    .likeButton:checked + label svg #grp3 {
+        opacity: 1;
+        transition: 0.1s all 0.3s;
+    }
+
+.likeButton:checked + label svg #grp3 #oval1 {
+    transform: scale(0) translate(30px, 0px);
+    transform-origin: 0 0 0;
+    transition: 0.5s transform 0.3s;
+}
+
+.likeButton:checked + label svg #grp3 #oval2 {
+    transform: scale(0) translate(60px, 10px);
+    transform-origin: 0 0 0;
+    transition: 1.5s transform 0.3s;
+}
+
+.likeButton:checked + label svg #grp4 {
+opacity: 1;
+transition: 0.1s all 0.3s;
+}
+
+.likeButton:checked + label svg #grp4 #oval1 {
+    transform: scale(0) translate(30px, 15px);
+    transform-origin: 0 0 0;
+    transition: 0.5s transform 0.3s;
+}
+
+.likeButton:checked + label svg #grp4 #oval2 {
+    transform: scale(0) translate(40px, 50px);
+    transform-origin: 0 0 0;
+    transition: 1.5s transform 0.3s;
+}
+
+.likeButton:checked + label svg #grp5 {
+opacity: 1;
+transition: 0.1s all 0.3s;
+}
+
+.likeButton:checked + label svg #grp5 #oval1 {
+    transform: scale(0) translate(-10px, 20px);
+    transform-origin: 0 0 0;
+    transition: 0.5s transform 0.3s;
+}
+
+.likeButton:checked + label svg #grp5 #oval2 {
+    transform: scale(0) translate(-60px, 30px);
+    transform-origin: 0 0 0;
+    transition: 1.5s transform 0.3s;
+}
+
+.likeButton:checked + label svg #grp6 {
+opacity: 1;
+transition: 0.1s all 0.3s;
+}
+
+.likeButton:checked + label svg #grp6 #oval1 {
+    transform: scale(0) translate(-30px, 0px);
+    transform-origin: 0 0 0;
+    transition: 0.5s transform 0.3s;
+}
+
+.likeButton:checked + label svg #grp6 #oval2 {
+    transform: scale(0) translate(-60px, -5px);
+    transform-origin: 0 0 0;
+    transition: 1.5s transform 0.3s;
+}
+
+.likeButton:checked + label svg #grp7 {
+opacity: 1;
+transition: 0.1s all 0.3s;
+}
+
+.likeButton:checked + label svg #grp7 #oval1 {
+    transform: scale(0) translate(-30px, -15px);
+    transform-origin: 0 0 0;
+    transition: 0.5s transform 0.3s;
+}
+
+.likeButton:checked + label svg #grp7 #oval2 {
+    transform: scale(0) translate(-55px, -30px);
+    transform-origin: 0 0 0;
+    transition: 1.5s transform 0.3s;
+}
+
+.likeButton:checked + label svg #grp2 {
+opacity: 1;
+transition: 0.1s opacity 0.3s;
+}
+
+.likeButton:checked + label svg #grp3 {
+opacity: 1;
+transition: 0.1s opacity 0.3s;
+}
+
+.likeButton:checked + label svg #grp4 {
+opacity: 1;
+transition: 0.1s opacity 0.3s;
+}
+
+.likeButton:checked + label svg #grp5 {
+opacity: 1;
+transition: 0.1s opacity 0.3s;
+}
+
+.likeButton:checked + label svg #grp6 {
+opacity: 1;
+transition: 0.1s opacity 0.3s;
+}
+
+.likeButton:checked + label svg #grp7 {
+opacity: 1;
+transition: 0.1s opacity 0.3s;
+}
+
+@keyframes animateCircle {
+    40% {
+        transform: scale(10);
+        opacity: 1;
+        fill: #dd4688;
+    }
+
+    55% {
+        transform: scale(11);
+        opacity: 1;
+        fill: #d46abf;
+    }
+
+    65% {
+        transform: scale(12);
+        opacity: 1;
+        fill: #cc8ef5;
+    }
+
+    75% {
+        transform: scale(13);
+        opacity: 1;
+        fill: transparent;
+        stroke: #cc8ef5;
+        stroke-width: 0.5em;
+    }
+
+    85% {
+        transform: scale(17);
+        opacity: 1;
+        fill: transparent;
+        stroke: #cc8ef5;
+        stroke-width: 0.2em;
+    }
+
+    95% {
+        transform: scale(18);
+        opacity: 1;
+        fill: transparent;
+        stroke: #cc8ef5;
+        stroke-width: 0.1em;
+    }
+
+    100% {
+        transform: scale(19);
+        opacity: 1;
+        fill: transparent;
+        stroke: #cc8ef5;
+        stroke-width: 0;
+    }
+}
+
+@keyframes animateHeart {
+    0% {
+        transform: scale(0.2);
+    }
+
+    40% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes animateHeartOut {
+    0% {
+        transform: scale(1.4);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+ 
+
+
+
+

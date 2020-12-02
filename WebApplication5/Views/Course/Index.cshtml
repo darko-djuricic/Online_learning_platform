@@ -1,0 +1,102 @@
+﻿@model List<Course>
+@{
+    ViewBag.Title = "Courses";
+    var categories = ViewData["Categories"] as List<Categories>;
+    var search = Url.ActionContext.HttpContext.Request.Query["search"];
+}
+
+    <div class="container mt-5 pt-5 vh-100">
+        @if (!String.IsNullOrEmpty(search))
+        {
+            <h1 class="mt-5 mb-5">@Model.Count results for "@search"</h1>
+            @if (Model.Count == 0)
+            {<h4 class="mb-3">See other courses</h4>}
+        }
+    <div class="row mt-5">
+        <div class="form-group col-5 col-md-4 col-lg-3 ">
+            <select class="form-control" asp-items='new SelectList((ViewData["Topics"] as List<string>))' id="topicSelect">
+                <option value="">-- Pick a topic --</option>
+            </select>
+        </div>
+        <div class="form-group col-5 col-lg-4 pl-0">
+            <select class="form-control" id="sortSelect">
+                <option value="">Most relevant</option>
+                <option value="popular">Most Popular</option>
+                <option value="highest">Highest rated</option>
+                <option value="new">Newest</option>
+            </select>
+        </div>
+        <a asp-controller="Course" class="text-decoration-none text-danger col-auto mt-2 ml-auto">Reset</a>
+        <form class="form-inline d-block d-md-none col-12" method="get" asp-controller="Course" asp-action="Index">
+            <div class="input-group">
+                <input class="form-control" type="search" name="search" placeholder="Search" aria-label="Search">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </div>
+            </div>
+        </form>
+    </div>
+        <hr />
+        <div class="courses">
+            <div class="row">
+                @foreach (var course in Model)
+                {
+
+                    string imageDataUrl = "/img/undraw_online_test_gba7.png";
+                    if (course.Image != null)
+                    {
+                        string imageBase64Data = Convert.ToBase64String(course.Image.ImageData);
+                        imageDataUrl = $"data:{course.Image.ImageType};base64,{imageBase64Data}";
+                    }
+                    var contents = course.Sections.SelectMany(el => el.Contents);
+                    var ratingStudents = course.Participants.Where(el => el.Rating > 0).Count();
+                    var duration = TimeSpan.FromSeconds(contents.Sum(el => el.Duration));
+                    
+                    <div class="col-12 mb-1 course">
+                        <input type="text" class="keywords" value="@course.Keywords" hidden />
+                            <div class="card mb-3 w-100 shadow-sm">
+                                <div class="row no-gutters">
+                                    <div class="col-md-4">
+                                        <img src="@imageDataUrl" class="card-img h-100" alt="...">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="card-body">
+                                            <h5 class="card-title font-weight-bold">
+                                                <a asp-action="Info" asp-route-id="@course.CourseId" class="text-decoration-none text-primary">@course.Title</a>
+                                            </h5>
+                                            <p class="card-text text-muted text-overflow">@course.TitleDescription</p>
+                                            <div class="row mt-3">
+                                                <a href="@Url.ActionLink("Profile","Home", new { id = course.Author.Trim() })" class="col-auto small text-decoration-none">@course.Author</a>
+                                                <p class="card-text ml-auto mr-2"><small class="text-muted">Last updated @course.GetTimeSince()</small></p>
+                                            </div>
+                                            <p class="card-text"><small class="text-muted font-weight-bolder">@contents.Count() lectures, @(duration.TotalHours > 1 ? duration.TotalHours.ToString("N1") + " total hours" : duration.TotalMinutes.ToString("N1") + " total minutes")</small></p>
+                                            <div class="d-flex justify-content-start mb-0 pb-0 h5">
+                                                <span class="pt-1">@(course.Participants.Sum(el => el.Rating) / (ratingStudents == 0 ? 1 : ratingStudents))</span>
+                                                <img src="~/img/star.svg" width="25" class="ml-1 mr-2" alt="Rating" />
+                                                <span class="text-muted h6 pt-1">(@ratingStudents)</span>
+                                                <div class="ml-auto">
+                                                    <img src="~/img/student.svg" width="30" alt="student" />
+                                                    <span class="my-3">@course.Participants.Count students</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                                
+                    </div>
+                }
+            </div>
+            @if (Model.Count == 0)
+            {
+                <div class="row justify-content-center">
+                    <h1 class="col-12 text-center">Nothing found</h1>
+                    <img src="~/img/not_found.svg" class="col-10 col-md-6 col-lg-5" alt="Alternate Text" />
+                </div>
+            }
+        </div>
+    </div>
+
+@section Scripts{ 
+    <script src="~/js/courseSearch.js"></script>
+}

@@ -1,0 +1,46 @@
+﻿<div class="modal fade" id="courseModal" data-backdrop="static" tabindex="-1" role="dialog"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg shadow-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Add course info</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="@Url.Action("CreateCourse", "Values")" method="post" id="courseForm">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inputTitle"><span class="text-danger">* </span>Title</label>
+                            <input type="text" class="form-control" name="title" maxlength="70" id="inputTitle" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="courseCategory"><span class="text-danger">* </span>Category</label>
+                            <select id="courseCategory" name="category" class="form-control" asp-items="@ViewBag.Categories">
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="">Keywords</label>
+                            <partial name="_KeywordsManage" />
+                        </div>
+                        
+                    </div>
+                    <div class="form-group mt-2">
+                        <label for="exampleFormControlTextarea1">
+                            <span class="text-danger">
+                                *
+                            </span>Title description
+                        </label>
+                        <textarea class="form-control" name="TitleDescription" maxlength="200" id="exampleFormControlTextarea1"
+                                  rows="3" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnSubmit" class="btn btn-lg btn-outline-primary">Create</button>
+                <button type="button" class="btn btn-lg btn-danger" data-dismiss="modal">Cancle</button>
+            </div>
+        </div>
+    </div>
+</div>

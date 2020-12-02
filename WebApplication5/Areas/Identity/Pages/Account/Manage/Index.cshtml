@@ -1,0 +1,76 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Profile";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+
+
+<h4>@ViewData["Title"]</h4>
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+<form id="profile-form" enctype="multipart/form-data" method="post">
+    <div class="d-flex flex-column-reverse flex-lg-row">
+        <div class="col-lg-8 pl-0">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Username"></label>
+                <input asp-for="Username" class="form-control" disabled />
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.PhoneNumber"></label>
+                <input asp-for="Input.PhoneNumber" class="form-control" />
+                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+            </div>
+            <button id="update-profile-button" type="submit" class="btn pl-5 pr-5 btn-primary">Save</button>
+            <a class="mt-5 text-decoration-none d-block" href="@Url.ActionLink("Profile", "Home", new { id = User.Identity.Name })">View my profile</a>
+        </div>
+        <div class="col-lg-4">
+            @{ string imageData = ViewData["ImageData"] as string;}
+            <div class="d-flex justify-content-center">
+                <div class="avatar-upload">
+                    <div class="avatar-edit">
+                        <input type='file' id="imageUpload" name="image" accept=".png, .jpg, .jpeg" multiple="multiple" />
+                        <label for="imageUpload" class="text-center">
+                            <img src="~/img/pen.svg" width="22" alt="Alternate Text" />
+                        </label>
+                    </div>
+                    @if (!String.IsNullOrEmpty(imageData))
+                    {
+                        <div class="avatar-edit mt-4 pt-2">
+                            <div class="text-center mt-1">
+                                <a href="@Url.Action("DeleteProfilePicture","Values")"><img src="~/img/remove-img.svg" width="30" alt="Alternate Text" /></a>
+                            </div>
+                        </div>
+                    }
+                    
+                    <div class="avatar-preview">
+                        <div id="imagePreview" class="d-flex justify-content-center align-items-center" style="background-image: url(@imageData);">
+                            @if (imageData == null)
+                            {
+                                <img src="~/img/user.svg" width="80" alt="Alternate Text" />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="row ml-1 mt-5">
+    <div class="">
+        <h4>Upgrade account</h4>
+        <p>Apply for teacher role!</p>
+        <a asp-page="Upgrade" id="upgrade" class="btn btn-outline-primary @(User.IsInRole("Teacher") ? "disabled":"")">Upgrade account</a>
+    </div>
+    <div class="ml-0 ml-md-4 mt-3 mt-md-0">
+        <h4>Delete account</h4>
+        <p> After this operation, you will not be able to recover your account</p>
+        <a id="delete" asp-page="DeletePersonalData" class="btn btn-outline-danger">Delete account</a>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/userImage.js"></script>
+}

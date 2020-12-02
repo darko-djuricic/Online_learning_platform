@@ -1,0 +1,326 @@
+﻿@{
+    ViewBag.Title = "Explore Courses";
+    var hotAndNew = ViewData["HotNew"] as List<Course>;
+    var mostPopular = (ViewData["MostPopular"] as List<Course>).Where(el => !hotAndNew.Any(el2 => el2.CourseId.Equals(el.CourseId))).ToList();
+
+
+    if (hotAndNew!=null && hotAndNew.Count > 0)
+    {
+        mostPopular.Remove(hotAndNew.First());
+    }
+
+    var courses = (Model as List<Course>).Where(el => !(hotAndNew.Any(el2 => el2.CourseId.Equals(el.CourseId)) || mostPopular.Any(el2 => el2.CourseId.Equals(el.CourseId))));
+    var id = (string)Url.ActionContext.HttpContext.Request.RouteValues["id"]??"-1";
+    var categories = ViewData["Categories"] as List<Categories>;
+    var category = ViewData["Category"] as Categories;
+}
+
+@section Styles{
+    <link rel="stylesheet" type="text/css" href="~/css/lightslider.css" />
+}
+<div class="container-fluid bg-light mt-5 pt-5">
+    <div class="row pt-4 pb-4">
+        <img id="back" src="~/img/right.svg" style="transform: rotate(180deg);" class="zoom mr-auto ml-1" width="15" alt="Alternate Text" />
+        <div class="@(category == null?"container":"") col-10 col-md-11 p-0">
+            <div id="slideCategories" class="overflow-hidden text-nowrap">
+                @if (category == null)
+                {
+                    foreach (var cat in categories.Where(el => !categories.SelectMany(el=>el.Subcategories).Any(x => x.Id.Equals(el.Id))).OrderBy(el => el.Title))
+                    {
+                        <a class="d-inline-block ml-5" asp-route-id="@cat.Id">@cat.Title</a>
+
+                    }
+                }
+                else
+                {
+                    if (category.Subcategories != null && category.Subcategories.Count > 0)
+                    {
+                        <a class="d-inline-block ml-5 mr-5 pr-5 font-weight-bold text-dark" asp-route-id="@category.Id">@category.Title</a>
+
+                        foreach (var cat in category.Subcategories)
+                        {
+                            <a class="d-inline-block ml-5 text-dark" asp-route-id="@cat.Id">@cat.Title</a>
+                        }
+                    }
+                    else
+                    {
+                        category = categories.Single(el => el.Subcategories.Any(el2 => el2.Id.Trim().Equals(id.Trim())));
+                        <a class="d-inline-block ml-5 mr-5 pr-5 font-weight-bold text-dark" asp-route-id="@category.Id">@category.Title</a>
+
+                        foreach (var cat in category.Subcategories)
+                        {
+                            <a class="d-inline-block ml-5 @(id.Trim().Equals(cat.Id.Trim())?"":"text-dark")" asp-route-id="@cat.Id">@cat.Title</a>
+                        }
+
+                    }
+                }
+            </div>
+        </div>
+        <img id="forw" src="~/img/right.svg" class="zoom ml-auto mr-1" width="15" alt="Alternate Text" />
+    </div>
+</div>
+
+<div class="container mt-5">
+    @if (User.Identity.IsAuthenticated && courses != null && courses.SelectMany(el => el.Participants).Any(el => el.User.Username.Equals(User.Identity.Name)))
+    {
+        <div class="alert alert-info mt-4 mb-5 alert-dismissible fade show" role="alert">
+            Go to enrolled course by <a asp-controller="Course" asp-action="MyCourses">clicking here</a>.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <h1 class="mt-3 mb-5">@(category == null? "Explore":category.Title) courses</h1>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        var recomended = ViewData["Recomended"] as List<Course>;
+        if (recomended != null && recomended.Count > 0)
+        {
+            //Recomended courses
+            <span class="font-weight-light h4">Recomended for you</span><hr />
+            <ul id="recomendedCourses" class="autoWidth cs-hidden mb-5  h-100">
+                @foreach (var course in recomended)
+                {
+                    string imageDataUrl = "/img/undraw_online_test_gba7.png";
+                    if (course.Image != null)
+                    {
+                        string imageBase64Data = Convert.ToBase64String(course.Image.ImageData);
+                        imageDataUrl = $"data:{course.Image.ImageType};base64,{imageBase64Data}";
+                    }
+                    bool condition = hotAndNew.Any(el => el.CourseId.Equals(course.CourseId));
+                    var ratingStudents = course.Participants.Where(el => el.Rating > 0).Count();
+
+                    <li class="item-a">
+                        <div class="card ">
+                            <img src="@imageDataUrl" height="150" class="card-img-top" alt="...">
+                            <div class="position-absolute right-0 pt-1 h4">
+                                <span class="badge badge-@(condition?"warning":"danger")">Hot@(condition ? "&New" : "")</span>
+                            </div>
+                            <div class="card-body mb-0">
+                                <h6 class="card-title position-absolute courseTitle h6 pr-2">@course.Title</h6>
+                                <div class="mb-3 pt-5">
+                                    <a href="@Url.ActionLink("Profile", "Home", new { id = course.Author })" class="small d-inline courseAuthor">@course.Author</a>
+                                    <span class="d-inline float-right font-weight-bold pt-1 small text-muted">Last update @course.GetTimeSince()</span>
+                                </div>
+
+                                <span class="d-flex justify-content-center mb-0 pb-0 h5">
+                                    <span class="pt-1">@(course.Participants.Sum(el => el.Rating) / (ratingStudents == 0 ? 1 : ratingStudents))</span>
+                                    <img src="~/img/star.svg" width="25" class="ml-1 mr-2" alt="Rating" />
+                                    <span class="text-muted h6 pt-1">(@ratingStudents)</span>
+                                </span>
+                            </div>
+                            <div class="card-footer p-1">
+                                <a href="@Url.ActionLink("Info", "Course", new { id = course.CourseId })" class="text-decoration-none btn btn-success btn-block">View course</a>
+                            </div>
+                        </div>
+
+
+                    </li>
+                }
+            </ul>
+
+            //Topics
+            <span class="font-weight-light h4">Topics recomended for you</span><hr />
+            <div id="recomendedCourses" class="row mb-5">
+                @foreach (var kw in ViewData["Topics"] as List<String>)
+                {
+                    <div class="col-auto">
+                        <a asp-controller="Course" asp-action="Index" asp-route-search="@(kw.ToLower())" class="mb-2 font-weight-bold border text-decoration-none col-12 pickCourse d-flex justify-content-center align-items-center text-center p-3 ml-1 shadow-sm">@kw.ToUpper()</a>
+                    </div>
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-warning alert-dismissible fade show mb-5" role="alert">
+            <span class="h5">Holy guacamole, you still not learning? <a class="font-weight-bold" asp-area="Identity" asp-page="/Account/Register">Register now!</a></span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @*MOST POPULAR COURSES*@
+    @if (mostPopular != null && mostPopular.Count > 0)
+    {
+        <span class="font-weight-light h4">Most popular</span><hr />
+        <ul id="mostPopularCourses" class="autoWidth cs-hidden mb-5  h-100">
+            @foreach (var course in mostPopular)
+            {
+                string imageDataUrl = "/img/undraw_online_test_gba7.png";
+                if (course.Image != null)
+                {
+                    string imageBase64Data = Convert.ToBase64String(course.Image.ImageData);
+                    imageDataUrl = $"data:{course.Image.ImageType};base64,{imageBase64Data}";
+                }
+                bool condition = hotAndNew.Any(el => el.CourseId.Equals(course.CourseId));
+                <li class="item-a">
+                    <div class="card ">
+                        <img src="@imageDataUrl" height="150" class="card-img-top" alt="...">
+                        <div class="position-absolute right-0 pt-1 h4">
+                            <span class="badge badge-@(condition?"warning":"danger")">Hot@(condition ? "&New" : "")</span>
+                        </div>
+                        <div class="card-body mb-0">
+                            <h6 class="card-title position-absolute courseTitle h6 pr-2">@course.Title</h6>
+                            <div class="mb-3 pt-5">
+                                <a href="@Url.ActionLink("Profile", "Home", new { id = course.Author })" class="small d-inline courseAuthor">@course.Author</a>
+                                <span class="d-inline float-right font-weight-bold pt-1 small text-muted">Last update @course.GetTimeSince()</span>
+                            </div>
+
+                            <span class="d-flex justify-content-center mb-0 pb-0 h5">
+                                <span class="pt-1">@(course.Participants.Sum(el=>el.Rating)/(course.Participants.Count==0?1: course.Participants.Count))</span>
+                                <img src="~/img/star.svg" width="25" class="ml-1 mr-2" alt="Rating" />
+                                <span class="text-muted h6 pt-1">(@course.Participants.Count)</span>
+                            </span>
+                        </div>
+                        <div class="card-footer p-1">
+                            <a href="@Url.ActionLink("Info", "Course", new { id = course.CourseId })" class="text-decoration-none btn btn-success btn-block">View course</a>
+                        </div>
+                    </div>
+
+
+                </li>
+            }
+        </ul>
+    }
+
+    @*HOT AND NEW COURSES*@
+    @if (hotAndNew != null && hotAndNew.Count > 0)
+    {
+        var hot = hotAndNew.First();
+        <span class="font-weight-light h4">Hot and new</span><hr />
+        <div class="col-12 col-lg-10 pl-0 pb-4">
+            <a href="@Url.ActionLink("Info", "Course", new { id = hot.CourseId })" class="text-decoration-none text-primary">
+                <div class="card mb-3 w-100">
+                    <div class="row no-gutters">
+                        <div class="col-lg-5">
+                            @{
+                                string imageDataUrl = "/img/undraw_online_test_gba7.png";
+                                if (hot.Image != null)
+                                {
+                                    string imageBase64Data = Convert.ToBase64String(hot.Image.ImageData);
+                                    imageDataUrl = $"data:{hot.Image.ImageType};base64,{imageBase64Data}";
+                                }
+                                <img src="@imageDataUrl" class="w-100 card-img h-100" alt="...">
+                            }
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="card-body">
+                                <h2 class="card-title">@hot.Title</h2>
+                                <span class="badge border badge-light mb-3 h4">
+                                    @hot.Category.Title
+                                </span>
+                                <p class="card-text lead">@hot.TitleDescription</p>
+                                <div class="row pl-2 pr-2">
+                                    <p class="card-text pt-2">
+                                        <span class="text-muted">Last updated @hot.GetTimeSince()</span>
+                                    </p>
+                                    <span class="mb-0 row ml-auto mr-2 pb-0 h3">
+                                        <img src="~/img/star.svg" width="30" class="ml-1 mr-1" alt="Rating" />
+                                        <span class="pt-1">@(hot.Participants.Sum(el=>el.Rating)/(hot.Participants.Count==0?1: hot.Participants.Count))</span>
+                                        <span class="text-muted h4 ml-1 pt-2">(@hot.Participants.Count)</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+        <ul id="hotAndNewCourses" class="autoWidth cs-hidden mb-5  h-100">
+            @foreach (var course in hotAndNew.GetRange(1, hotAndNew.Count - 1))
+            {
+                imageDataUrl = "/img/undraw_online_test_gba7.png";
+                if (course.Image != null)
+                {
+                    string imageBase64Data = Convert.ToBase64String(course.Image.ImageData);
+                    imageDataUrl = $"data:{course.Image.ImageType};base64,{imageBase64Data}";
+                }
+                <li class="item-a">
+                    <div class="card ">
+                        <img src="@imageDataUrl" height="150" class="card-img-top" alt="...">
+                        <div class="position-absolute right-0 pt-1 h4">
+                            <span class="badge badge-warning">Hot@(hotAndNew.Any(el=>el.CourseId.Equals(course.CourseId))?"&New":"")</span>
+                        </div>
+                        <div class="card-body mb-0">
+                            <h6 class="card-title position-absolute courseTitle h6 pr-2">@course.Title</h6>
+                            <div class="mb-3 pt-5">
+                                <span class="badge border badge-light">
+                                    <a asp-route-id="@course.Category.Id" class="text-decoration-none text-primary">@course.Category.Title</a>
+                                </span>
+                                <br class="mb-3" />
+                                <a href="@Url.ActionLink("Profile", "Home", new { id = course.Author })" class="small pl-1 d-inline courseAuthor">@course.Author</a>
+                                <span class="d-inline float-right font-weight-bold pt-1 small text-muted">Last update: @(course.UpdateDate.Date.Equals(DateTime.Today)?"Today":course.UpdateDate.ToShortDateString())</span>
+                            </div>
+
+                            <span class="d-flex justify-content-center mb-0 pb-0 h5">
+                                <span class="pt-1">@(course.Participants.Sum(el=>el.Rating)/(course.Participants.Count==0?1: course.Participants.Count))</span>
+                                <img src="~/img/star.svg" width="25" class="ml-1 mr-2" alt="Rating" />
+                                <span class="text-muted h6 pt-1">(@course.Participants.Count)</span>
+                            </span>
+                        </div>
+                        <div class="card-footer p-1">
+                            <a href="@Url.ActionLink("Info", "Course", new { id = course.CourseId })" class="text-decoration-none btn btn-success btn-block">View course</a>
+                        </div>
+                    </div>
+
+
+                </li>
+            }
+        </ul>
+    }
+
+    @*STUDENTS ARE VIEWING COURSES*@
+    @if (courses != null && courses.Count() > 0)
+    {
+        <span class="font-weight-light h4">Students are reviewing</span><hr />
+        <ul id="studentsAreViewing" class="autoWidth cs-hidden mb-5  h-100">
+            @foreach (var course in courses)
+            {
+                string imageDataUrl = "/img/undraw_online_test_gba7.png";
+                if (course.Image != null)
+                {
+                    string imageBase64Data = Convert.ToBase64String(course.Image.ImageData);
+                    imageDataUrl = $"data:{course.Image.ImageType};base64,{imageBase64Data}";
+                }
+                <li class="item-a">
+                    <div class="card ">
+                        <img src="@imageDataUrl" height="150" class="card-img-top" alt="...">
+                        <div class="position-absolute right-0 pt-1 h4">
+                            <span class="badge badge-warning">Hot@(hotAndNew.Any(el=>el.CourseId.Equals(course.CourseId))?"&New":"")</span>
+                        </div>
+                        <div class="card-body mb-0">
+                            <h6 class="card-title position-absolute courseTitle h6 pr-2">@course.Title</h6>
+                            <div class="mb-3 pt-5">
+                                <a href="@Url.ActionLink("Profile", "Home", new { id = course.Author })" class="small d-inline courseAuthor">@course.Author</a>
+                                <span class="d-inline float-right font-weight-bold pt-1 small text-muted">Last update: @(course.UpdateDate.Date.Equals(DateTime.Today)?"Today":course.UpdateDate.ToShortDateString())</span>
+                            </div>
+
+                            <span class="d-flex justify-content-center mb-0 pb-0 h5">
+                                <span class="pt-1">@(course.Participants.Sum(el=>el.Rating)/(course.Participants.Count==0?1: course.Participants.Count))</span>
+                                <img src="~/img/star.svg" width="25" class="ml-1 mr-2" alt="Rating" />
+                                <span class="text-muted h6 pt-1">(@course.Participants.Count)</span>
+                            </span>
+                        </div>
+                        <div class="card-footer p-1">
+                            <a href="@Url.ActionLink("Info", "Course", new { id = course.CourseId })" class="text-decoration-none btn btn-success btn-block">View course</a>
+                        </div>
+                    </div>
+
+
+                </li>
+            }
+        </ul>
+    }
+
+
+
+</div>
+@section Scripts{
+    <script type="text/javascript" src="~/js/lightslider.js"></script>
+    <script src="~/js/courseSliderAndSearch.js" type="text/javascript"></script>
+}

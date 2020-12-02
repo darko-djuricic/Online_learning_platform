@@ -1,0 +1,36 @@
+﻿<nav class="navbar pl-0 bg-primary">
+    <ul class="navbar-nav mt-0">
+        <li class="logo">
+            <a asp-controller="Home" asp-action="Index" class="nav-link linkNav">
+                <span class="link-text logo-text">VISER</span>
+                <img src="~/img/right-arrow.svg" height="50" alt="Right" />
+            </a>
+        </li>
+
+        <li class="nav-item itemNav">
+            <a asp-controller="Teacher" asp-action="Index" class="nav-link linkNav">
+                <img src="~/img/dashboard.svg" height="30" alt="My Courses" />
+                <span class="link-text">Dashboard</span>
+            </a>
+        </li>
+
+        <li class="nav-item itemNav">
+            <a asp-controller="Teacher" asp-action="Communications" class="nav-link linkNav">
+                <img src="~/img/communications.svg" height="30" alt="Communications" />
+                <span class="link-text">Communications</span>
+            </a>
+        </li>
+        <li class="nav-item itemNav">
+            <a asp-controller="Teacher" asp-action="Performance" class="nav-link linkNav">
+                <img src="~/img/performance.svg" height="30" alt="Performance" />
+                <span class="link-text">Performance</span>
+            </a>
+        </li>
+        <li class="nav-item itemNav">
+            <a asp-page="/Account/Manage/Index" asp-area="Identity" class="nav-link linkNav">
+                <img src="~/img/settings.svg" height="30" alt="Settings" />
+                <span class="link-text">Settings</span>
+            </a>
+        </li>
+    </ul>
+</nav>

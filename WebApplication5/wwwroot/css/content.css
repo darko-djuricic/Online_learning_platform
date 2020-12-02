@@ -1,0 +1,43 @@
+﻿.dashed{
+    border-bottom: 1px dashed gray;
+}
+
+.deleteCourse {
+    white-space: nowrap;
+    overflow: hidden;
+    width: 40px;
+    transition: width 0.8s !important;
+    border: none;
+    border-radius: 100px;
+}
+
+.deleteCourse:hover{
+    width: 160px !important;
+}
+
+.deleteContent{
+    right:0;
+}
+.contentArrow{
+    outline: none;
+}
+
+a{
+    outline:none;
+}
+
+#addContent, .custom-file, .custom-file-input, .custom-file-label {
+    cursor: pointer;
+}
+
+.contentTitle {
+    display: initial !important;
+}
+
+#courseImage{
+    max-height: 20rem !important;
+}
+
+.rotate:after {
+    transform: rotate(180deg);
+}

@@ -1,0 +1,48 @@
+﻿#courseBody {
+    height: 7rem;
+}
+
+.keyword {
+    outline: 0px;
+    font-size: medium;
+    display: inline-block !important;
+}
+
+.sectionTitle {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 200px;
+    overflow: hidden
+}
+
+.closeIcon {
+    cursor: pointer;
+}
+
+.scrollTop {
+    position: fixed;
+    bottom: 800px;
+    right: 40px;
+    width: 70px;
+    height: 70px;
+    background: #fff url(../img/up.png) no-repeat;
+    border-radius: 50%;
+    background-size: 50px;
+    background-position: center;
+    border: 2px solid #2C3E50;
+    z-index: 9999999;
+    cursor: pointer;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.5s;
+}
+
+.scrollTop.active{
+    bottom: 40px;
+    visibility: visible;
+    opacity: 1;
+}
+
+.scrollTop.active:hover{
+    transform: scale(1.1);
+}

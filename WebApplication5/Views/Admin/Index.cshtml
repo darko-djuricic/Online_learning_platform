@@ -1,0 +1,204 @@
+﻿@model Microsoft.AspNetCore.Identity.UserManager<Microsoft.AspNetCore.Identity.IdentityUser>
+@{
+    var users = Model.Users.Where(user => user.EmailConfirmed && !user.UserName.Equals(User.Identity.Name)).ToList();
+    var categories = ViewData["Categories"] as List<Categories>;
+    var subcategories = ViewData["Subcategories"] as List<Categories>;
+    ViewBag.Title = "Admin page";
+    var status = TempData["AdminStatus"] as string;
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="~/siteIcon.ico" rel="shortcut icon" type="image/x-icon" />
+    <title>Admin page - ViserCourses</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/all.css" />
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="row pl-0 pl-md-5">
+            <div class="col-md-10 col-lg-10 col-xl-11">
+                <span class="float-right mr-2 pt-2"><a asp-controller="Home" asp-action="Index">Home</a></span>
+                <h1 class="text-center appearing-text display-3 mt-3 mb-5 pb-5">Welcome @User.Identity.Name!</h1>
+
+                @if (!String.IsNullOrEmpty(status))
+                {
+                    <div class="alert alert-light h5 alert-dismissible fade show" role="alert">
+                        @status
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                }
+                <div id="chart" class="row">
+                    <div class="col-lg-9">
+                        <canvas id="myChart">
+                        </canvas>
+                    </div>
+                    <div class="col-lg-3 pt-lg-3">
+                        <h4>Popularity of Viser platform</h4>
+                        <div class="row">
+                            <div class="col col-lg-12">
+                                <div class="form-group">
+                                    <label for="yearSelect">Pick a year</label>
+                                    <select class="form-control" id="yearSelect" asp-items="@(new SelectList((ViewData["Years"] as List<DateTime>), "Date.Year", "Date.Year"))"></select>
+                                </div>
+                            </div>
+                            <div class="col col-lg-12">
+                                <div class="form-group">
+                                    <label for="yearSelect">Chart type</label>
+                                    <select class="form-control" id="chartTypeSelect">
+                                        <option value="bar">Bar</option>
+                                        <option value="line">Line</option>
+                                        <option value="pie">Pie</option>
+                                        <option value="doughnut">Doughnut</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="users" class="mt-5">
+                    <h2>Users</h2>
+                    <table class="table table-hover mt-5 mb-5">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Role</th>
+                                <th scope="col">Admin</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in users)
+                            {
+                                var condition = Model.IsInRoleAsync(user, "Admin").Result;
+                                <tr class="cursor-pointer">
+                                    <th scope="row">
+                                        @(users.IndexOf(user) + 1).
+                                        <form asp-action="DeleteUser" asp-controller="Admin" asp-route-id="@user.Id" method="get" class="deleteForm"></form>
+                                    </th>
+                                    <td class="username">
+                                        <a target="_blank" asp-action="Profile" asp-controller="Home" asp-route-id="@user.UserName">@user.UserName</a>
+                                    </td>
+                                    <td>@(Model.GetRolesAsync(user).Result.FirstOrDefault()??"Student")</td>
+                                    <td>@(condition ? Html.Label("Admin") : Html.ActionLink("Upgrade", "UpgradeAdmin", "Admin",new { id=user.Id }))</td>
+                                    <td class="d-flex justify-content-end">
+                                        @if (!condition)
+                                        {
+                                            <img src="~/img/delete.svg" class="deleteUser zoom cursor-pointer mr-1 p-0" width="18" alt="Delete user" />
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div id="categories" class="mt-5">
+                    <h2>Categories</h2>
+                    <div class="mt-5 pt-4">
+                        <h4>Add category</h4>
+                        <form id="categoryForm" method="post" class="mt-4">
+                            <div class="form-row">
+                                <div class="form-group col-md-6 col-lg-4">
+                                    <label for="categoryTitle">Title</label>
+                                    <input name="title" type="text" class="form-control" id="categoryTitle">
+                                </div>
+                                <div class="form-group col-md-6 col-lg-4">
+                                    <label for="parentCategory">Parent</label>
+                                    <select name="parent" id="parentCategory" asp-items="@(new SelectList(categories,"Id","Title"))" class="form-control">
+                                        <option value="" selected>None</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="button" id="addCategory" class="btn btn-primary btn-lg pl-5 pr-5 rounded">Add</button>
+                            <button type="button" id="editCategory" class="btn btn-primary btn-lg pl-5 pr-5 rounded disabled">Edit</button>
+                        </form>
+                    </div>
+                    <div class="mt-5" id="baseCat">
+                        <h4>Base categories</h4>
+                        <table class="table table-hover mt-5 mb-5">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Title</th>
+                                    <th scope="col" class="text-center">Num. of subcategories</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="categories">
+                                @foreach (var cat in categories)
+                                {
+                                    <tr class="cursor-pointer selectRow">
+                                        <th scope="row">
+                                            @(categories.IndexOf(cat) + 1).
+                                            <p class="id" hidden>@cat.Id</p>
+                                            <form asp-action="DeleteCategory" asp-controller="Admin" asp-route-id="@cat.Id" method="get" class="deleteForm"></form>
+                                        </th>
+                                        <td class="title">@cat.Title</td>
+                                        <td class="text-center">@cat.Subcategories.Count</td>
+                                        <td class="d-flex justify-content-end">
+                                            <img src="~/img/delete.svg" class="deleteCategory zoom cursor-pointer mr-1 p-0" width="18" alt="Delete comment" />
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-5" id="subcategories">
+                        <h4>Subcategories</h4>
+                        <table class="table table-hover mt-5 mb-5">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Title</th>
+                                    <th scope="col">Parent</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var cat in subcategories)
+                                {
+                                    <tr class="cursor-pointer selectRow">
+                                        <th scope="row">
+                                            @(subcategories.IndexOf(cat) + 1).
+                                            <p class="id" hidden>@cat.Id</p>
+                                            <form asp-action="DeleteCategory" asp-controller="Admin" asp-route-id="@cat.Id" method="get" class="deleteForm"></form>
+                                        </th>
+                                        <td class="title">@cat.Title</td>
+                                        <td class="parent">@(categories.Single(el => el.Subcategories.Contains(cat)).Title)</td>
+                                        <td class="d-flex justify-content-end">
+                                            <img src="~/img/delete.svg" class="deleteCategory zoom cursor-pointer mr-1 p-0" width="18" alt="Delete comment" />
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="vh-100 position-sticky col-lg-2 col-xl-1 justify-content-center align-items-center d-none d-lg-flex shadow-sm text-center" style="top:0;">
+                <div>
+                    <h5><a href="#chart">Chart</a></h5>
+                    <h5><a href="#users">Users</a></h5>
+                    <h5><a href="#categories">Categories</a></h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <partial name="_DeleteModal" />
+    @*@{WebApplication5.Controllers.AdminController.StatusAdminUpgrade = String.Empty;}*@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="~/js/charts.js"></script>
+    <script src="~/js/status.js"></script>
+    <script src="~/js/admin.js"></script>
+</body>
+</html>

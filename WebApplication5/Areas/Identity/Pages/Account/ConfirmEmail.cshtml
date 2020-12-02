@@ -1,0 +1,29 @@
+﻿@page
+@model ConfirmEmailModel
+@{
+    ViewData["Title"] = "Confirm email";
+}
+
+@section Styles{ 
+    <link href="~/css/registration.css" rel="stylesheet" />
+}
+
+    <section class="bg-primary p-5 text-light d-flex justify-content-center align-items-center">
+        <div class="container">
+            <div class="alert alert-success" role="alert">
+                <h2 class="alert-heading">Well done!</h2>
+                <h4>You successfully verifed your account. Explore all the free courses that we made up for you!</h4>
+                <h4 class="mb-0">You can apply for teacher role anytime! All you need to do is send us your informations, and we will send you feedback as soon as possible</h4>
+                <hr>
+                <a class="h4" asp-area="Identity" asp-page="/Account/Login">Go to Login page</a>
+            </div>
+        </div>
+        <div class="wave wave1"></div>
+        <div class="wave wave2"></div>
+        <div class="wave wave3"></div>
+        <div class="wave wave4"></div>
+    </section>
+
+@section Scripts{ 
+    <script src="~/js/register.js"></script>
+}

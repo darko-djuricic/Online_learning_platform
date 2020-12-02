@@ -1,0 +1,44 @@
+﻿@model List<Course>
+<div class="col-12 mt-1 mb-4">
+    <table class="table mt-4 border table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Title</th>
+                <th scope="col">Participants</th>
+                <th scope="col">Rating</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var course in Model)
+            {
+                var courseRating = course.Participants.Sum(el => el.Rating) / course.Participants.Where(el => el.Rating > 0).Count();
+                <tr>
+                    <th scope="col">@(Model.IndexOf(course)+1).</th>
+                    <th scope="col"><a class="text-decoration-none" asp-controller="Course" asp-action="Info" asp-route-id="@course.CourseId">@course.Title</a></th>
+                    <th scope="col"><a data-toggle="modal" href="#partsModal">@course.Participants.Count</a></th>
+                    <th scope="col">@(Double.IsNaN(courseRating)?0: courseRating)</th>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="modal" tabindex="-1" id="partsModal1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Participants</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,124 @@
+﻿<div class="modal fade" id="qaModal" tabindex="-1" role="dialog" aria-labelledby="qaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="qaModalLabel">New question</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="qaForm">
+                    <div class="form-group">
+                        <label for="qa-title" class="col-form-label"><span class="text-danger">* </span>Title:</label>
+                        <input type="text" name="title" class="form-control" id="qa-title">
+                    </div>
+                    <div class="form-group">
+                        <label for="qa-body" class="col-form-label">Body:</label>
+                        <textarea class="form-control" name="body" id="qa-body"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="spinner-border spinnerComment" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <button class="btn btn-lg btn-danger" data-dismiss="modal">Close</button>
+                <button type="button" id="postQa" class="btn btn-lg btn-outline-primary">Post</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="qaModalLabel">Review</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-center">
+                    <div id="rateCourse">
+                        <span class="h5 pl-5 mt-2">Rate this course:</span>
+                        <div class="rating">
+                            <input type="radio" class="ratingStar" name="rating" id="r1">
+                            <label for="r1"></label>
+
+                            <input type="radio" class="ratingStar" name="rating" id="r2">
+                            <label for="r2"></label>
+
+                            <input type="radio" class="ratingStar" name="rating" id="r3">
+                            <label for="r3"></label>
+
+                            <input type="radio" class="ratingStar" name="rating" id="r4">
+                            <label for="r4"></label>
+
+                            <input type="radio" class="ratingStar" name="rating" id="r5">
+                            <label for="r5"></label>
+
+                        </div>
+                    </div>
+                </div>
+                
+                <form id="commentForm">
+                    <div class="form-group mt-5">
+                        <label for="comment-title" class="col-form-label"><span class="text-danger">* </span>Title:</label>
+                        <input type="text" name="title" class="form-control" id="comment-title">
+                    </div>
+                    <div class="form-group">
+                        <label for="comment-body" class="col-form-label">Body:</label>
+                        <textarea class="form-control" name="body" id="comment-body"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="spinner-border spinnerComment" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <button class="btn btn-lg btn-danger" data-dismiss="modal">Close</button>
+                <button type="button" id="postComment" class="btn btn-lg btn-outline-primary">Post</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="replyModal" tabindex="-1" role="dialog" aria-labelledby="replyModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Reply</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="replyForm">
+                    <div class="form-group">
+                        <label for="comment-for-reply" class="col-form-label">Reply to:</label>
+                        <input type="text" class="form-control comment-for-reply" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="reply" class="col-form-label"><span class="text-danger">* </span>Title:</label>
+                        <input type="text" class="form-control" value="" name="title" id="reply">
+                        <input type="text" name="Author" value="user" hidden />
+                    </div>
+                    <div class="form-group">
+                        <label for="body-text" class="col-form-label">Body:</label>
+                        <textarea class="form-control" name="body" id="body-text"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="spinner-border spinnerComment" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <button class="btn btn-lg btn-danger" data-dismiss="modal">Close</button>
+                <button type="button" id="postReply" class="btn btn-lg btn-outline-primary">Post</button>
+            </div>
+        </div>
+    </div>
+</div>

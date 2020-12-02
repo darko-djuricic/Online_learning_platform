@@ -1,0 +1,54 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@{
+    ViewData["Title"] = "Profile";
+    var user = Model as IdentityUser;
+    var image = ViewData["Image"] as string;
+}
+@section Styles{
+    <link href="~/css/profile.css" rel="stylesheet" />
+}
+
+<section class="bg-info">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="col-sm-8 col-md-7  col-lg-6 col-xl-4 bg-white profileDiv p-2 border border-secondary rounded">
+                <div class="d-flex justify-content-center">
+                    <div class="profilePic bg-light d-flex justify-content-center align-items-center border rounded-circle" style="background: url(@(image)) no-repeat center">
+                        @if (String.IsNullOrEmpty(image))
+                        {
+                            <img src="~/img/user.svg" width="100" alt="Alternate Text" />
+                        }
+                    </div>
+                </div>
+                <div class="text-center">
+                    <h3 class="text-info mt-1">@user.UserName</h3>
+                    <p class="lead font-weight-bold">@ViewBag.Role</p>
+                </div>
+                <hr class="bg-primary">
+                <div class="row">
+                    <span class="col-md-6"><b>Email:</b><br>@user.Email</span>
+                    @if (!String.IsNullOrEmpty(user.PhoneNumber))
+                    {
+                        <span class="col-md-6 col-lg-5 mt-3 mt-md-0"><b>Mobile:</b><br> @user.PhoneNumber</span>
+                    }
+                </div>
+                <hr class="bg-primary mt-3">
+                <div class="d-flex flex-column">
+                    <h5 class="pt-1 text-center">Average rating for Darkela's courses</h5>
+                    <div class="row d-flex justify-content-center">
+                        <h4 class="pt-2 mr-2">@ViewBag.Rating (@ViewBag.Number)</h4>
+                        <img src="~/img/star.svg" width="35" alt="Star" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="wave wave1"></div>
+    <div class="wave wave2"></div>
+    <div class="wave wave3"></div>
+    <div class="wave wave4"></div>
+</section>

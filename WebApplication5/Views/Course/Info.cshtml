@@ -1,0 +1,437 @@
+﻿@using System.Security.Claims
+@model Course
+@{
+    ViewBag.Title = "Course Info";
+    var comments = Model.Comments.Where(el => !el.IsQA);
+    var participant = Model.Participants.SingleOrDefault(el => el.User.Username.Equals(User.Identity.Name));
+    var progress = ViewBag.Progress;
+    var info = Model.Author.Equals(User.Identity.Name) ? CourseInfo.Edit : (participant != null ? (progress > 0 ? CourseInfo.Continue : CourseInfo.Start) : CourseInfo.Enroll);
+    var likes = ViewData["LikedComments"] as List<Likes>??new List<Likes>();
+    var users = ViewData["Users"] as List<User> ?? new List<User>();
+    var contents = Model.Sections.SelectMany(el => el.Contents);
+    var duration = TimeSpan.FromSeconds(contents.Sum(el => el.Duration));
+}
+
+@section Styles{
+    <link href="~/css/info.css" rel="stylesheet" />
+}
+
+<div class="jumbotron jumbotron-fluid pt-5 mt-5 bg-primary">
+
+    <div class="jumbotron-background">
+        @{
+            string imageDataUrl = "/img/undraw_online_test_gba7.svg";
+            if (Model.Image != null)
+            {
+                string imageBase64Data = Convert.ToBase64String(Model.Image.ImageData);
+                imageDataUrl = $"data:{Model.Image.ImageType};base64,{imageBase64Data}";
+            }
+        }
+        <img src="@imageDataUrl" class="blur" alt="Course image" />
+    </div>
+
+    <div class="container text-white">
+        <div class="row mb-5 mt-5 pt-3 pb-3">
+            <div class="col-lg-8">
+                <h2 id="headerCourse" class="headerJumbo display-4 mt-3">@Model.Title</h2>
+                <h4>Category: <a asp-action="Explore" asp-route-id="@Model.Category.Id" id="categoryCourse" class="text-danger text-decoration-none">@Model.Category.Title</a></h4>
+                <p id="descCourse" class="lead mt-1" readonly rows="6">@Model.TitleDescription</p>
+                <div class="row">
+                    <span class="mt-3 col-auto col-md-12">Created by: <a class="text-danger text-decoration-none" href="@Url.ActionLink("Profile", "Home", new { id = Model.Author })">@Model.Author</a></span>
+                    <div class="mt-3 ml-auto ml-md-0 col-auto col-md-12">
+                        <img src="~/img/last-update.svg" class="mr-1" width="25" alt="Alternate Text" />
+                        <span class="small">Last updated: @Model.UpdateDate.ToShortDateString()</span>
+                    </div>
+                </div>
+                <a asp-controller="@(info == CourseInfo.Edit ? "Teacher":"Course")" asp-action="@(info == CourseInfo.Edit ? "Content" : (info == CourseInfo.Enroll ? "Enroll" : "Lecture"))" asp-route-id="@Model.CourseId" class="btn btn-lg mt-5 btn-danger rounded pl-5 pr-5">@info.ToString()</a>
+                @if (info == CourseInfo.Edit || User.IsInRole("Admin"))
+                {
+                    <button type="button" class="deleteCourse btn btn-lg mt-5 btn-outline-danger rounded pl-5 pr-5 mr-2 ml-2">Delete</button>
+                    <a href="@Url.ActionLink("Lecture", "Course", new { id = Model.CourseId })" class="text-decoration-none mr-2">
+                        <img src="~/img/eye.svg" class="mt-5 zoom" width="40" alt="View course" />
+                    </a>
+                    <form id="deleteForm" action="@Url.ActionLink("Delete", "Course", new { id = Model.CourseId })" method="get"></form>
+                }
+
+            </div>
+            <div class="col-lg-4 shadow-lg border border-danger ml-5 mr-5 mr-lg-0 ml-lg-0 text-center mt-3 mt-lg-0">
+                <div class="row">
+                    <div class="col-6 col-md-12 pt-3 pb-3">
+                        <img src="~/img/courseInfo.svg" class="@(info == CourseInfo.Enroll ? "" : "d-none") img-fluid w-75" alt="course info" />
+                        <div id="courseProgress" class="@(info != CourseInfo.Enroll ? "" : "d-none")">
+                            <h3 class="text-center">Progress:</h3>
+                            <div class="progress mx-auto" data-value='@progress'>
+                                <span class="progress-left">
+                                    <span class="progress-bar border-success"></span>
+                                </span>
+                                <span class="progress-right">
+                                    <span class="progress-bar border-success"></span>
+                                </span>
+                                <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                    <div class="h2 font-weight-bold">
+                                        @progress%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-6 col-md-12 mt-3 mt-md-0">
+                        <h4 class="mb-0">Rating:</h4>
+                        <div id="rating" class="row d-flex justify-content-center">
+                            <img src="~/img/star.svg" width="30" alt="Rating star" />
+                            <p id="ratingCourse" class="text-danger h4 mt-2 ml-1">@ViewBag.Rating/5.0 (@ViewBag.RatingsAmount)</p>
+                        </div>
+                        <h4 class="text-center text-lg-left mt-3">Number of participants: <span class="text-danger" id="participantsCourse">@Model.Participants.Count</span></h4>
+                    </div>
+                    <div class="col-12 text-left">
+                        <h4 class="mt-3">This course includes:</h4>
+                        <ul class="list-unstyled mt-1 text-left pl-3 h5">
+                            <li class="row">
+                                <img src="~/img/video.svg" width="25" alt="Video icon" />
+                                <span class="ml-2 pt-1">@(duration.Hours > 0 ?$"{Math.Round(duration.TotalHours,1)} hours":$"{Math.Round(duration.TotalMinutes, 1)} minutes") on-demand video</span>
+                            </li>
+                            <li class="row mt-1">
+                                <img src="~/img/book.svg" width="25" alt="Lecture icon" />
+                                <span class="ml-2 pt-1">@contents.Count() lectures</span>
+                            </li>
+                            <li class="row mt-1">
+                                <img src="~/img/infinity.svg" width="25" alt="Lecture icon" />
+                                <span class="ml-2 pt-1">Full lifetime access</span>
+                            </li>
+                            <li class="row mt-1">
+                                <img src="~/img/mobile.svg" width="25" alt="Lecture icon" />
+                                <span class="ml-2 pt-1">Access on mobile</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<div class="container">
+    <h2>Course content</h2>
+    <div id="sections">
+        @foreach (var section in Model.Sections.OrderBy(el => el.Number))
+        {
+            <div class="section border-bottom border-dark">
+                <a class="d-block btn rounded-0 text-left p-3 bg-primary text-white d-block" data-toggle="collapse" data-target="#collapse@(section.Number)" aria-expanded="true" aria-controls="collapseOne">
+                    <span class="h4">@(section.Number). @(section.Title)</span>
+                </a>
+                <div class="collapse border border-light contents" id="collapse@(section.Number)">
+                    @foreach (var content in section.Contents.OrderBy(el => el.Number))
+                    {
+                        <div class="content p-3 border-bottom">
+                            <a href="@(Model.Participants.Any(el=>el.User.Username.Equals(User.Identity.Name))?Url.Action("Lecture", "Course", new { id = Model.CourseId, content = content.Id, section = section.SectionId }):"#")" class="text-decoration-none text-primary h5">@(content.Number). @(content.Title)</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <h3 class="mt-5">Description</h3>
+    <div class="divCourseDescript overflow-hidden less mt-3">
+        <span id="courseDescripiton">@Model.Description</span>
+    </div>
+    <a href="#" class="text-center d-block mt-2 dropdown-toggle" id="show">Show more</a>
+
+</div>
+
+
+
+
+<div class="container">
+    <h3 class="mt-3 mb-3">Reviews</h3>
+    <div class="reviewFunc row">
+        <div class="col-7">
+            <div class="input-group mb-2">
+                <input type="text" class="form-control searchComments" placeholder="Search all comment">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-success disabled">Search</button>
+                </div>
+            </div>
+        </div>
+        @if (participant != null && !participant.User.Username.Equals(Model.Author))
+        {
+            <div id="addReview" class="col-5 pr-0">
+                @if (participant.Rating == 0)
+                {
+                    <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#commentModal">Add review</button>
+
+                }
+                else
+                {
+                    <p class="float-right text-success">Thanks for review!</p>
+                }
+            </div>
+        }
+
+
+    </div>
+    <h5 class="mt-3 text-justify ml-2 mb-3 font-weight-bold">
+        <span id="numberOfQA">@(Model.Comments.Count)</span> questions
+    </h5>
+    <div id="load">
+        <div id="commentsOrQa" class="container-fluid overflow-auto bg-white border shadow mt-3 pt-1 h-100 text-center">
+
+            @if (comments != null)
+            {
+                var i = 1;
+                <ul id="commentsection" class="list-unstyled mt-3">
+                    @foreach (var comm in comments)
+                    {
+                        DateTime commDate = comm.Date;
+                        var condition = comm.Replies != null && comm.Replies.Count > 0;
+                        var likesForComment = likes.Where(el => el.IdComment.Equals(comm.Id)).ToList();
+                        var counter = 1;
+                        var userImageDataUrl = String.Empty;
+                        Image img = users.Single(el => el.Username.Equals(comm.Author)).Image;
+                        if (img != null)
+                        {
+                            string userImageBase64Data = Convert.ToBase64String(img.ImageData);
+                            userImageDataUrl = $"data:{img.ImageType};base64,{userImageBase64Data}";
+                        }
+
+
+                        <li class="">
+                            <div class="media question mb-5 border-bottom text-justify">
+                                <div class="userImg text-light mr-3 mt-1 pt-2 d-flex justify-content-center align-items-center rounded-circle" style="width: 60px; height: 60px; background: url(@userImageDataUrl) no-repeat center; background-size: cover;">
+                                    @if (String.IsNullOrEmpty(userImageDataUrl))
+                                    {
+                                        <span class="h3">@comm.Author[0]</span>
+                                    }
+                                </div>
+                                <div class="media-body">
+                                    <span class="commentTitle mt-0 h5 font-weight-bold mt-5">
+                                        @comm.Title
+                                    </span>
+                                    @{
+                                        var parts = Model.Participants.SingleOrDefault(el => el.User.Username.Equals(comm.Author));
+
+                                        if (parts != null)
+                                        {
+                                            <div class="reviewRating mt-2 mb-2">
+                                                @for (int j = 0; j < parts.Rating; j++)
+                                                {
+                                                    <img src="~/img/star.svg" width="22" alt="Rating star" />
+                                                }
+                                            </div>
+                                        }
+                                    }
+
+
+                                    <span class="commentBody d-none d-md-block">@comm.Body</span>
+                                    <a tabindex="0" class="text-success d-block d-md-none" role="button" data-boundary="scrollParent" data-toggle="popover" data-trigger="focus" title="@comm.Title" data-content="@comm.Body">More</a>
+                                    <div class="row">
+                                        <div class="small mt-4 pl-3 mr-auto">
+                                            <a href="@Url.ActionLink("Profile", "Home", new { id = comm.Author })" class="commentAuthor d-inline">@comm.Author</a>
+                                            <p class="commDate d-inline ml-2">@(commDate.ToShortDateString() == DateTime.Today.ToShortDateString() ? "Today":commDate.ToShortDateString())</p>
+                                        </div>
+                                        <p class="lead mr-2 mt-3 pl-3">
+                                            @if (User.Identity.IsAuthenticated && Model.Author.Trim().Equals(User.Identity.Name.Trim()))
+                                            {
+                                                <a class="mr-3 mt-2 text-decoration-none h6" data-toggle="modal" data-comment="@comm.Title" data-id="@comm.Id" href="#replyModal">Reply</a>
+                                            }
+                                            @if (condition)
+                                            {
+                                                <a class="mr-3 mt-2 text-decoration-none dropdown-toggle h6" data-toggle="collapse" href="#collapseReplies@(i)" role="button" aria-expanded="false" aria-controls="collapseReplies">Show replies</a>
+                                            }
+                                            <div class="col-12 col-md-1 ml-0 p-0 pr-5 pr-md-2 text-right mb-2">
+                                                <div class="likeOfReviews d-flex justify-content-center justify-content-md-end">
+                                                    <div>
+                                                        <input type="checkbox" id="checkbox@(counter)" value="@comm.Id" class="likeButton" @(likesForComment.Any(el => el.IdComment.Equals(comm.Id) && el.UserId.Equals(User.FindFirstValue(ClaimTypes.NameIdentifier))) ? "checked" : "") />
+                                                        <label for="checkbox@(counter++)" class="text-center">
+                                                            <svg id="heart-svg" viewBox="467 392 58 57" xmlns="http://www.w3.org/2000/svg">
+                                                                <g id="Group" fill="none" fill-rule="evenodd" transform="translate(467 392)">
+                                                                    <path d="M29.144 20.773c-.063-.13-4.227-8.67-11.44-2.59C7.63 28.795 28.94 43.256 29.143 43.394c.204-.138 21.513-14.6 11.44-25.213-7.214-6.08-11.377 2.46-11.44 2.59z" id="heart" fill="#AAB8C2" />
+                                                                    <circle id="main-circ" fill="#E2264D" opacity="0" cx="29.5" cy="29.5" r="1.5" />
+
+                                                                    <g id="grp7" opacity="0" transform="translate(7 6)">
+                                                                        <circle id="oval1" fill="#9CD8C3" cx="2" cy="6" r="2" />
+                                                                        <circle id="oval2" fill="#8CE8C3" cx="5" cy="2" r="2" />
+                                                                    </g>
+
+                                                                    <g id="grp6" opacity="0" transform="translate(0 28)">
+                                                                        <circle id="oval1" fill="#CC8EF5" cx="2" cy="7" r="2" />
+                                                                        <circle id="oval2" fill="#91D2FA" cx="3" cy="2" r="2" />
+                                                                    </g>
+
+                                                                    <g id="grp3" opacity="0" transform="translate(52 28)">
+                                                                        <circle id="oval2" fill="#9CD8C3" cx="2" cy="7" r="2" />
+                                                                        <circle id="oval1" fill="#8CE8C3" cx="4" cy="2" r="2" />
+                                                                    </g>
+
+                                                                    <g id="grp2" opacity="0" transform="translate(44 6)">
+                                                                        <circle id="oval2" fill="#CC8EF5" cx="5" cy="6" r="2" />
+                                                                        <circle id="oval1" fill="#CC8EF5" cx="2" cy="2" r="2" />
+                                                                    </g>
+
+                                                                    <g id="grp5" opacity="0" transform="translate(14 50)">
+                                                                        <circle id="oval1" fill="#91D2FA" cx="6" cy="5" r="2" />
+                                                                        <circle id="oval2" fill="#91D2FA" cx="2" cy="2" r="2" />
+                                                                    </g>
+
+                                                                    <g id="grp4" opacity="0" transform="translate(35 50)">
+                                                                        <circle id="oval1" fill="#F48EA7" cx="6" cy="5" r="2" />
+                                                                        <circle id="oval2" fill="#F48EA7" cx="2" cy="2" r="2" />
+                                                                    </g>
+
+                                                                    <g id="grp1" opacity="0" transform="translate(24)">
+                                                                        <circle id="oval1" fill="#9FC7FA" cx="2.5" cy="3" r="2" />
+                                                                        <circle id="oval2" fill="#9FC7FA" cx="7.5" cy="2" r="2" />
+                                                                    </g>
+                                                                </g>
+                                                            </svg><br />
+                                                            <span class="likes text-success">@likesForComment.Count</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </p>
+                                    </div>
+
+                                    @if (condition)
+                                    {
+                                        <div class="replies collapse container-fluid mb-2" id="collapseReplies@(i++)">
+                                            @foreach (var reply in comm.Replies)
+                                            {
+                                                var likesForReply = likes.Where(el => el.IdComment.Equals(reply.Id)).ToList();
+                                                var replDate = reply.Date;
+                                                userImageDataUrl = String.Empty;
+                                                img = users.Single(el => el.Username.Equals(reply.Author)).Image;
+                                                if (img != null)
+                                                {
+                                                    string userImageBase64Data = Convert.ToBase64String(img.ImageData);
+                                                    userImageDataUrl = $"data:{img.ImageType};base64,{userImageBase64Data}";
+                                                }
+
+                                                <div class="media ml-0 reply shadow-sm border-left border-primary w-100 text-justify">
+                                                    <div class="userImg text-light p-2 pl-3 pr-3 mr-3 ml-2 mt-2 rounded-circle" style="width: 60px; height: 60px; background: url(@userImageDataUrl) no-repeat center; background-size: cover;">
+                                                        @if (String.IsNullOrEmpty(userImageDataUrl))
+                                                        {
+                                                            <span class="h3">@reply.Author[0]</span>
+                                                        }
+                                                    </div>
+                                                    <div class="media-body pt-2">
+                                                        <span class="commentTitle mt-0 pt-2 h5 font-weight-bold mt-5">
+                                                            @reply.Title
+                                                        </span>
+                                                        <span class="replyBody d-none d-md-block">@reply.Body</span>
+                                                        <a tabindex="0" class="text-success d-block d-md-none" role="button" data-toggle="popover" data-trigger="focus" title="@reply.Title" data-content="@reply.Body">More</a>
+                                                        <div class="row">
+                                                            <div class="small mt-3 ml-3">
+                                                                <a href="@Url.ActionLink("Profile", "Home", new { id = reply.Author })" class="commentAuthor d-inline">@reply.Author</a>
+                                                                <p class="commDate d-inline ml-2">@(replDate.ToShortDateString() == DateTime.Today.ToShortDateString() ? "Today": replDate.ToShortDateString())</p>
+                                                            </div>
+                                                            <div class="col-12 col-md-1 ml-auto p-0 pr-5 pr-md-2 text-right mb-2">
+                                                                <div class="likeOfReviews d-flex justify-content-center justify-content-md-end">
+                                                                    <div>
+                                                                        <input type="checkbox" id="checkbox@(counter)" value="@reply.Id" class="likeButton" @(likesForReply.Any(el => el.IdComment.Equals(reply.Id) && el.UserId.Equals(User.FindFirstValue(ClaimTypes.NameIdentifier))) ? "checked" : "") />
+                                                                        <label for="checkbox@(counter++)" class="text-center">
+                                                                            <svg id="heart-svg" viewBox="467 392 58 57" xmlns="http://www.w3.org/2000/svg">
+                                                                                <g id="Group" fill="none" fill-rule="evenodd" transform="translate(467 392)">
+                                                                                    <path d="M29.144 20.773c-.063-.13-4.227-8.67-11.44-2.59C7.63 28.795 28.94 43.256 29.143 43.394c.204-.138 21.513-14.6 11.44-25.213-7.214-6.08-11.377 2.46-11.44 2.59z" id="heart" fill="#AAB8C2" />
+                                                                                    <circle id="main-circ" fill="#E2264D" opacity="0" cx="29.5" cy="29.5" r="1.5" />
+
+                                                                                    <g id="grp7" opacity="0" transform="translate(7 6)">
+                                                                                        <circle id="oval1" fill="#9CD8C3" cx="2" cy="6" r="2" />
+                                                                                        <circle id="oval2" fill="#8CE8C3" cx="5" cy="2" r="2" />
+                                                                                    </g>
+
+                                                                                    <g id="grp6" opacity="0" transform="translate(0 28)">
+                                                                                        <circle id="oval1" fill="#CC8EF5" cx="2" cy="7" r="2" />
+                                                                                        <circle id="oval2" fill="#91D2FA" cx="3" cy="2" r="2" />
+                                                                                    </g>
+
+                                                                                    <g id="grp3" opacity="0" transform="translate(52 28)">
+                                                                                        <circle id="oval2" fill="#9CD8C3" cx="2" cy="7" r="2" />
+                                                                                        <circle id="oval1" fill="#8CE8C3" cx="4" cy="2" r="2" />
+                                                                                    </g>
+
+                                                                                    <g id="grp2" opacity="0" transform="translate(44 6)">
+                                                                                        <circle id="oval2" fill="#CC8EF5" cx="5" cy="6" r="2" />
+                                                                                        <circle id="oval1" fill="#CC8EF5" cx="2" cy="2" r="2" />
+                                                                                    </g>
+
+                                                                                    <g id="grp5" opacity="0" transform="translate(14 50)">
+                                                                                        <circle id="oval1" fill="#91D2FA" cx="6" cy="5" r="2" />
+                                                                                        <circle id="oval2" fill="#91D2FA" cx="2" cy="2" r="2" />
+                                                                                    </g>
+
+                                                                                    <g id="grp4" opacity="0" transform="translate(35 50)">
+                                                                                        <circle id="oval1" fill="#F48EA7" cx="6" cy="5" r="2" />
+                                                                                        <circle id="oval2" fill="#F48EA7" cx="2" cy="2" r="2" />
+                                                                                    </g>
+
+                                                                                    <g id="grp1" opacity="0" transform="translate(24)">
+                                                                                        <circle id="oval1" fill="#9FC7FA" cx="2.5" cy="3" r="2" />
+                                                                                        <circle id="oval2" fill="#9FC7FA" cx="7.5" cy="2" r="2" />
+                                                                                    </g>
+                                                                                </g>
+                                                                            </svg><br />
+                                                                            <span class="likes text-success">@likesForReply.Count</span>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    @if (User.Identity.Name.Equals(reply.Author))
+                                                    {
+                                                        <div class="ml-2 mr-1 float-right">
+                                                            <a id="@reply.Id" class="text-danger deleteComment text-decoration-none zoom h3">&times;</a>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+
+                                    }
+
+                                </div>
+                                @if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.Identity.Name.Equals(Model.Author) || User.Identity.Name.Equals(comm.Author)))
+                                {
+                                    <div class="ml-2 mr-1 float-right">
+                                        <a id="@comm.Id" class="text-danger deleteComment text-decoration-none zoom h3">&times;</a>
+                                    </div>
+                                }
+
+                            </div>
+                        </li>
+
+                    }
+                </ul>
+            }
+            else
+            {
+                <h3>There are no questions for this lecture</h3>
+            }
+        </div>
+    </div>
+
+</div>
+
+<partial name="_CommentModals" />
+<partial name="_DeleteModal" />
+@section Scripts{
+    <script src="~/js/ProgressAndRating.js"></script>
+    <script src="~/js/comment.js"></script>
+    <script src="~/js/deleteCourse.js"></script>
+    <script>
+        $("#show").click((e) => {
+            e.preventDefault();
+            $(".divCourseDescript").toggleClass("less");
+            $(".divCourseDescript").toggleClass("border-bottom");
+            $("#show").toggleClass("dropdown-toggle");
+            $("#show").text($(".divCourseDescript").hasClass("less") ? "Show more" : "Show less");
+        });
+
+    </script>
+}

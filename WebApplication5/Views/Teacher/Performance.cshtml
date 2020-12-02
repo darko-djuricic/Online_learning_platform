@@ -1,0 +1,63 @@
+﻿@model List<Course>
+@{
+    ViewBag.Title = "Teacher panel-Performance";
+    Layout = "_LayoutTeacher";
+    var participants = ViewData["Participants"] as List<CourseUser>;
+    var mostRatedCourses = Model.OrderByDescending(el => el.Participants.Sum(el2 => el2.Rating)).ThenByDescending(el => el.Participants.Count).ToList();
+    var mostPopularCourses = Model.OrderByDescending(el => el.Participants.Count + Math.Round(el.Participants.Sum(el2 => el2.Rating) / el.Participants.Where(el => el.Rating > 0).Count())).ToList();
+}
+
+<h1 class="text-center mb-5 pb-5 mt-3">Performance</h1>
+<div class="container-fluid">
+    <div class="row mb-5 pb-5">
+        <div class="col-lg-8">
+            <canvas id="myChart"></canvas>
+        </div>
+        <div class="col-lg-4">
+            <h4>Popularity of your courses by year</h4>
+            <div class="form-group mt-3">
+                <label for="yearSelect">Pick a course</label>
+                <select class="form-control" id="courseSelect" asp-items="@(new SelectList(Model,"CourseId","Title"))"></select>
+            </div>
+            <div class="form-group">
+                <label for="yearSelect">Pick a year</label>
+                <select class="form-control" id="yearSelect" asp-items="@(new SelectList(participants.Select(el=>el.EnrollDate.Year).Distinct()))"></select>
+            </div>
+            <div class="form-group">
+                <label for="yearSelect">Order by</label>
+                <select class="form-control" id="orderSelect">
+                    <option value="popularity">Popularity</option>
+                    <option value="rating">Rating</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="yearSelect">Chart type</label>
+                <select class="form-control" id="chartTypeSelect">
+                    <option value="bar">Bar</option>
+                    <option value="line">Line</option>
+                    <option value="pie">Pie</option>
+                    <option value="doughnut">Doughnut</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="mt-5 pt-5">
+        <h2>In table form:</h2><hr class="pb-5" />
+        <span class="mt-5 pt-5 h3">Most popular</span>
+        <div class="row mb-5 mt-3">
+            <partial name="_TableForCourse" model="mostPopularCourses" />
+        </div>
+
+        <span class="mt-5 h3">Most rated</span>
+        <div class="row mt-3">
+            <partial name="_TableForCourse" model="mostRatedCourses" />
+        </div>
+    </div>
+
+
+</div>
+
+@section Scripts{
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="~/js/charts.js"></script>
+}

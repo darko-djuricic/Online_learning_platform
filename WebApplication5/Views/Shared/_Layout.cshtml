@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="~/siteIcon.ico" rel="shortcut icon" type="image/x-icon" />
+    <title>@ViewData["Title"] - ViserCourses</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/all.css" />
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    <header>
+        <nav id="startNav" class="navbar navbar-expand-lg navbar-light bg-white text-primary shadow fixed-top">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                <img src="~/img/logo.svg" width="50" height="50" class="d-inline-block align" alt="">
+            </a>
+            <h4 class="mr-5 mt-2">VISER</h4>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item dropdown mr-5">
+                        <a class="h5 mb-1 mt-3 nav-link" asp-controller="Course" asp-action="Explore">
+                            Explore
+                        </a>
+                    </li>
+                    <li class="nav-item mt-3 mb-3">
+                        <form class="form-inline d-block" method="get" asp-controller="Course" asp-action="Index">
+                            <div class="input-group">
+                                <input class="form-control" type="search" name="search" placeholder="Search" aria-label="Search">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-success" type="submit">Search</button>
+                                </div>
+                            </div>
+                        </form>
+
+                    </li>
+                </ul>
+                <div class="float-lg-right">
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main role="main" class="pb-5 position-relative">
+        @RenderBody()
+    </main>
+    <partial name="_Footer1" />
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,303 @@
+﻿@{
+    Layout = "_LayoutTeacher";
+    ViewBag.Title = "Teacher Panel/Add Course";
+    var youtubeLink = "https://www.youtube.com/watch?v=";
+}
+@model Course
+
+@section Styles{
+    <link href="~/css/content.css" rel="stylesheet" />
+}
+
+@if (Model.Sections != null && Model.Sections.Count > 0)
+{
+    <a target="_blank" href="@Url.ActionLink("Lecture","Course",new { id = Model.CourseId, view = !Model.Published })" class="position-absolute mt-4 h5">View course</a>
+}
+<form id="deleteForm" action="@Url.ActionLink("Delete", "Course", new { id = Model.CourseId })" method="get">
+    <button type="button" class="deleteCourse btn btn-outline-danger position-absolute d-flex justify-content-start align-items-center mt-2" style="right: 0;">
+        <img src="~/img/delete.svg" width="30" height="40" alt="Delete" />
+        <span id="deleteText" class="font-weight-bold ml-1">Delete course</span>
+    </button>
+</form>
+<div class="mt-5 pt-5 mb-5 pb-5">
+    <span class="h2">Edit Course</span>
+    <form class="mt-0 pt-0 float-right" id="publishForm" method="get" action="@Url.Action("Publish", "Values", new { id=Model.CourseId, publish=Model.Published?false:true})">
+        <button type="submit" class="btn btn-outline-primary btn-lg mr-1">@(Model.Published?"Unpublish":"Publish")</button>
+        <button id="btnSave" type="button" class="btn btn-primary btn-lg">Save</button>
+    </form>
+    <div class="spinner-border text-primary mr-3 mt-2 float-right" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+    <hr />
+
+    <div id="status" class="position-sticky pt-3" style="top: 0 !important; z-index: 999999;">
+        @if (ViewBag.Status != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @ViewBag.Status
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span class="text-white" aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+    </div>
+
+    <form id="courseForm" enctype="multipart/form-data" action="@Url.Action("UpdateCourse", "Values", new { id=Model.CourseId})" method="post">
+        <div class="row">
+            <div class="col-lg-7">
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <label for="courseTitle" class="h4">Title</label>
+                        <input id="courseTitle" name="title" type="text" class="form-control" maxlength="70" value="@Model.Title" placeholder="Title">
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label for="titleDesc" class="h4">Title description</label>
+                        <textarea id="titleDesc" class="form-control" name="titledescription" maxlength="200" rows="3">@Model.TitleDescription</textarea>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="courseCategory" class="h4">Category</label>
+                        <select id="courseCategory" class="form-control" asp-items="@ViewData["Categories"] as SelectList">
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="courseSubcategory" class="h4">Subcategory</label>
+                        <select id="courseSubcategory" name="category" class="form-control" asp-items="@ViewBag.Subcat">
+                        </select>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label for="courseDesc" class="h4">Description</label>
+                        <textarea class="form-control" name="description" id="courseDesc" maxlength="4000" rows="15">@Model.Description</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="container-fluid">
+                    <label class="h4 text-center">Image (only PNG format)</label>
+                    <div id="imageOfCourse" class="col-12 text-center">
+                        @{
+                            string imageDataUrl = "/img/undraw_online_test_gba7.png";
+                            if (Model.Image != null)
+                            {
+                                string imageBase64Data = Convert.ToBase64String(Model.Image.ImageData);
+                                imageDataUrl = $"data:{Model.Image.ImageType};base64,{imageBase64Data}";
+                            }
+                        }
+                        <img id="courseImage" src="@imageDataUrl" class="border mt-4 mb-3 img-fluid" alt="Course image" />
+                        <div class="custom-file mt-2">
+                            <input type="file" onchange="readURL(this);" accept=".png, .jpg, .jpeg" class="custom-file-input" id="image" multiple="multiple" name="image">
+                            <label class="custom-file-label" id="courseImageLabel" for="courseImage">Choose image...</label>
+                        </div>
+                    </div>
+                    <div class="form-group mt-3 col-12">
+                        <label class="h4 mb-3">Keywords</label>
+                        <partial name="_KeywordsManage" />
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <input type="text" id="idOfCourse" value="@(Context.Request.Path.ToString().Split('/').Last())" hidden />
+    </form>
+    <div id="courseContent" class="mt-5 mb-5 ml-3 pr-2 pr-md-0">
+        <span class="h3">Content</span>
+        <a href="#" class="mt-2 float-right" data-toggle="modal" data-target="#instructionsModal">Click here for instructions</a>
+        <hr />
+        @if (Model.Sections.Count > 0)
+        {
+            int i = 0;
+            foreach (var section in Model.Sections.OrderBy(el => el.Number).Distinct())
+            {
+                <div class="row pl-0 pl-lg-5">
+                    <div class="section bg-primary p-2 pt-0 pr-0 mr-0 text-light border" style="width: 95%">
+                        <div class="position-absolute">
+                            <div class="row ml-3 mt-2">
+                                <span contenteditable="false" class="h4 d-inline-block pt-2 font-weight-bold mr-3">Section <span contenteditable="false" class="numberOfSection d-inline-block">@(section.Number)</span>: </span>
+                                <span contenteditable="true" class="border border-white p-2 d-inline-block h4 sectionTitle font-weight-bold" type="text">@(section.Title)</span>
+                            </div>
+                        </div>
+                        <a class="sectionCollapseLink d-block pt-2 pb-2 text-decoration-none text-right text-light mr-2 h3 " data-toggle="collapse" href="#section@(section.Number)">
+                            <span class="dropdown-toggle"></span>
+                        </a>
+                        <input class="idSection" type="text" value="@(section.SectionId)" hidden />
+
+                        <div class="collapse container-fluid sectionContents bg-white text-primary" id="@($"section{section.Number}")">
+                            @foreach (var content in section.Contents.OrderBy(el => el.Number))
+                            {
+                                int numOfContent = content.Number;
+                                <div class="row dashed ml-2 mr-2 pl-0 pl-lg-4">
+                                    <div class="content pt-4 pb-1 pl-3 pr-5" style="width: 94%">
+                                        <div class="position-absolute">
+                                            <span contenteditable="false" class="h5 p-2 font-weight-bold"><span class="numberOfContent">@numOfContent</span>. </span>
+                                            <span contenteditable="true" class="shadow p-2 pr-5 h5 contentTitle font-weight-bold" type="text">@content.Title</span>
+                                        </div>
+                                        <input class="idContent" type="text" value="@content.Id" hidden />
+                                        <a class="contentCollapseLink d-block text-right text-primary h3 " href="@($"#content{section.Number}{numOfContent}")" data-toggle="collapse">
+                                            <span class="dropdown-toggle"></span>
+                                        </a>
+                                        <div class="contentCollapse collapse pl-3" id=@($"content{section.Number}{numOfContent}")>
+                                            <div class="row mt-4">
+                                                <div class="col-xl-6">
+                                                    <div class="row">
+                                                        <div class="form-group pr-0 pr-lg-3 mb-3 col-12">
+                                                            <label class="videoLabel h6">Video</label>
+                                                            <div class="input-group">
+                                                                <input value="@(youtubeLink+content.YtVideoId)" name="VideoLink" type="text" class="form-control videoInput" placeholder="Copy Youtube Video Link Here">
+                                                                <div class="input-group-append">
+                                                                    <button class="btnTestVideo btn btn-outline-primary input-group-text">Test</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-12 mb-5 mb-lg-3">
+                                                            <h6>Test video... (max. duration 1 hour)</h6>
+                                                            <div class="embed-responsive embed-responsive-21by9">
+                                                                <iframe id="existing-iframe-example@(i)"
+                                                                        data-number="@(i++)"
+                                                                        class="embed-responsive-item ytVideo"
+                                                                        src="https://www.youtube.com/embed/@(content.YtVideoId)?enablejsapi=1"
+                                                                        frameborder="0" allowfullscreen
+                                                                        style="border: solid 2px #37474F"></iframe>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-6">
+                                                    <div class="form-group">
+                                                        <label for="textContent" class="h6">Text Content</label>
+                                                        <textarea class="form-control textContents" rows="17">@content.Text</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span class="deleteContent h3 zoom position-static text-danger float-right pl-0 pl-md-1 pt-4 pb-2">&times;</span>
+                                </div>
+
+                            }
+
+                            <div class="plusContent container d-flex justify-content-center mt-3">
+                                <img class="addContent zoom mb-3 mb-3" src="~/img/plus2.svg" width="50" alt="Add Content" />
+                            </div>
+                        </div>
+                    </div>
+                    <span class="deleteSection h3 position-static cursor-pointer pl-0 pl-md-1 pt-3 pb-2">&times;</span>
+                </div>
+
+            }
+        }
+        else
+        {
+            <div class="row pl-0 pl-lg-5">
+                <div id="startSection" class="section bg-primary p-2 pt-0 text-light border" style="width: 95%">
+                    <div class="position-absolute">
+                        <div class="row ml-3 mt-2">
+                            <span contenteditable="false" class="h4 pt-2 d-inline-block font-weight-bold mr-3">Section <span contenteditable="false" class="numberOfSection d-inline-block">1</span>: </span>
+                            <span contenteditable="true" class="border p-2 border-white d-inline-block h4 sectionTitle font-weight-bold" type="text">Section Title</span>
+                        </div>
+                    </div>
+                    <a class="sectionCollapseLink d-block pt-2 pb-2 text-decoration-none text-right text-light mr-2 h3" data-toggle="collapse" href="#section1">
+                        <span class="dropdown-toggle"></span>
+                    </a>
+                    <input class="idSection" type="text" value="" hidden />
+
+                    <div class="collapse sectionContents bg-white text-primary" id="section1">
+                        <div class="content pt-5 pb-1 pl-3 pr-5 mb-3">
+                            <div class="position-absolute">
+                                <span contenteditable="false" class="h5 p-2 font-weight-bold"><span class="numberOfContent">1</span>. </span>
+                                <span contenteditable="true" class="shadow p-2 pr-5 h5 contentTitle font-weight-bold" type="text">Content Title</span>
+                            </div>
+                            <input class="idContent" type="text" value="" hidden />
+                            <a class="contentCollapseLink d-block text-right text-primary h3 " href="#content11" data-toggle="collapse">
+                                <span class="dropdown-toggle"></span>
+                                <span onclick="" class="position-absolute text-danger zoom pl-3 pb-2">&times;</span>
+                            </a>
+
+                            <div class="contentCollapse collapse pl-3" id="content11">
+                                <div class="row mt-4">
+                                    <div class="col-xl-6">
+                                        <div class="row">
+                                            <div class="form-group pr-0 pr-lg-3 mb-3 col-12">
+                                                <label class="videoLabel h6">Video</label>
+                                                <div class="input-group">
+                                                    <input value="" name="VideoLink" type="text" class="form-control videoInput" placeholder="Copy Youtube Video Link Here">
+                                                    <div class="input-group-append">
+                                                        <button class="btnTestVideo btn btn-outline-primary input-group-text">Test</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 mb-5 mb-lg-3">
+                                                <h6>Test video...</h6>
+                                                <div class="embed-responsive embed-responsive-21by9">
+                                                    <iframe id="existing-iframe-example0"
+                                                            data-number="0"
+                                                            class="embed-responsive-item ytVideo"
+                                                            src="https://www.youtube.com/embed/emptylink?enablejsapi=1"
+                                                            frameborder="0" allowfullscreen
+                                                            style="border: solid 2px #37474F">
+                                                    </iframe>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-6">
+                                        <div class="form-group">
+                                            <label for="textContent" class="h6">Text Content</label>
+                                            <textarea class="form-control textContents" rows="17"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="plusContent container d-flex justify-content-center mt-3">
+                            <img class="addContent zoom mb-3 mb-3" src="~/img/plus2.svg" width="50" alt="Add Content" />
+                        </div>
+                    </div>
+                </div>
+                <span class="deleteSection h3 zoom pl-0 pl-md-1 pt-3 pb-2">&times;</span>
+            </div>
+
+        }
+        <div id="plusSection" class="container d-flex justify-content-center mt-5">
+            <img id="addSection" class="zoom" src="~/img/addSection.svg" width="70" alt="Add Section" />
+        </div>
+
+
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="exampleModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Modal body text goes here.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<partial name="_TeacherContentModal" />
+
+@{ WebApplication5.Controllers.TeacherController.StatusMessageUpdate = null;}
+
+@section Scripts{
+    <script src="~/js/addCourse.js"></script>
+    <script src="~/js/content.js"></script>
+    <script src="~/js/ytPlayerForContentPage.js"></script>
+    <script src="~/js/deleteCourse.js"></script>
+
+    @while (ViewBag.Keywords.MoveNext())
+    {
+        <script>addBadge(false, "@ViewBag.Keywords.Current")</script>
+    }
+
+}

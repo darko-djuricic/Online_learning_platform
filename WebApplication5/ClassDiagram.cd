@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access">
+  <Class Name="WebApplication5.Models.Categories" Collapsed="true">
+    <Position X="0.75" Y="0.5" Width="1.5" />
+    <AssociationLine Name="Subcategories" Type="WebApplication5.Models.Categories" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="0.938" Y="1.062" />
+        <Point X="0.938" Y="1.864" />
+        <Point X="2.125" Y="1.864" />
+        <Point X="2.125" Y="1.062" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>ABACAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Categories.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Subcategories" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="WebApplication5.Models.Comment" Collapsed="true">
+    <Position X="5.5" Y="1.5" Width="2" />
+    <AssociationLine Name="Replies" Type="WebApplication5.Models.Comment" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="5.875" Y="1.5" />
+        <Point X="5.875" Y="1.021" />
+        <Point X="7" Y="1.021" />
+        <Point X="7" Y="1.5" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.36" Y="0.081" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="UserWhoLiked" Type="WebApplication5.Models.Likes" FixedFromPoint="true">
+      <Path>
+        <Point X="5.875" Y="2.062" />
+        <Point X="5.875" Y="3.75" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.15" Y="0.123" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAGAAAAAAAAAEAAoAABAAAAAAAAAAABAAAAAAAIAAA=</HashCode>
+      <FileName>Models\Comment.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Replies" />
+      <Property Name="UserWhoLiked" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="WebApplication5.Models.Content" Collapsed="true">
+    <Position X="8.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAQAAAAACAEAAAEAAEAAAAAAAAAAAQAAACAAAAAA=</HashCode>
+      <FileName>Models\Content.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="QA" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="WebApplication5.Models.Course" Collapsed="true">
+    <Position X="3.25" Y="0.5" Width="1.75" />
+    <AssociationLine Name="Image" Type="WebApplication5.Models.Image">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.336" Y="0.36" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="Comments" Type="WebApplication5.Models.Comment" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.635" Y="1.062" />
+        <Point X="4.635" Y="1.781" />
+        <Point X="5.5" Y="1.781" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Participants" Type="WebApplication5.Models.CourseUser" FixedFromPoint="true">
+      <Path>
+        <Point X="4.438" Y="1.062" />
+        <Point X="4.438" Y="2.75" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAEAEAAAQAgAEAAiAAAAAAAAAAAAJAAAGAEAAAAqAA=</HashCode>
+      <FileName>Models\Course.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Image" />
+      <Property Name="Category" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Sections" />
+      <Property Name="Comments" />
+      <Property Name="Participants" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="WebApplication5.Models.CourseUser" Collapsed="true">
+    <Position X="3.25" Y="2.75" Width="1.5" />
+    <AssociationLine Name="Course" Type="WebApplication5.Models.Course" FixedToPoint="true">
+      <Path>
+        <Point X="3.625" Y="2.75" />
+        <Point X="3.625" Y="1.062" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.079" Y="0.195" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAFAAAAAAIAAAAAAIAAAAgQAAAAAAEAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\CourseUser.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="User" />
+      <Property Name="Course" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="WebApplication5.Models.Image" Collapsed="true">
+    <Position X="0.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAIAAAAAAAAEAAAAAIAAAAAA=</HashCode>
+      <FileName>Models\Image.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebApplication5.Models.Likes" Collapsed="true">
+    <Position X="5.5" Y="3.75" Width="2" />
+    <AssociationLine Name="Comment" Type="WebApplication5.Models.Comment" FixedToPoint="true">
+      <Path>
+        <Point X="7" Y="3.75" />
+        <Point X="7" Y="2.062" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.1" Y="0.06" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAABAAAEAAAAAAAAAAAAAAgAAAAAAAEAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Likes.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Comment" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="WebApplication5.Models.Progress" Collapsed="true">
+    <Position X="8.75" Y="2.75" Width="1.5" />
+    <AssociationLine Name="CourseUser" Type="WebApplication5.Models.CourseUser" FixedToPoint="true">
+      <Path>
+        <Point X="8.75" Y="2.938" />
+        <Point X="7.083" Y="2.938" Type="JumpStart" />
+        <Point X="6.917" Y="2.938" Type="JumpEnd" />
+        <Point X="5.958" Y="2.938" Type="JumpStart" />
+        <Point X="5.792" Y="2.938" Type="JumpEnd" />
+        <Point X="4.75" Y="2.938" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Content" Type="WebApplication5.Models.Content">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.786" Y="0.112" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAgAAIAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Progress.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="CourseUser" />
+      <Property Name="Content" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="WebApplication5.Models.Section" Collapsed="true">
+    <Position X="8.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAEAAAEAAAAAAAAAAAAAAAAAAAABQAAA=</HashCode>
+      <FileName>Models\Section.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Contents" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="WebApplication5.Models.User" Collapsed="true">
+    <Position X="3.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAAAAAAAAQAAAAgAAAAAABABAAAAABAAAAA=</HashCode>
+      <FileName>Models\User.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Image" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Courses" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Enum Name="WebApplication5.Models.CourseInfo" Collapsed="true">
+    <Position X="14.75" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAAACAAAAAAAEAAAAAAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Course.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -1,0 +1,20 @@
+﻿@page
+@model UpgradeModel
+@{
+    ViewData["Title"] = "Upgrade Account";
+    ViewData["ActivePage"] = ManageNavPages.Upgrade;
+}
+
+<h4 class="mb-3">@ViewData["Title"]</h4>
+
+<form method="post" class="col-md-6">
+    <partial name="_StatusMessage" model="Model.StatusMessage" />
+    <h5>Upload Resume</h5>
+    <div class="custom-file mb-3">
+        <input type="file" class="custom-file-input" id="validatedCustomFile">
+        <label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
+        <div class="invalid-feedback">Example invalid custom file feedback</div>
+    </div>
+    <button type="submit" class="btn btn-primary">Upgrade account</button>
+</form>
+
